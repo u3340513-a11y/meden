@@ -8,8 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
-dist-ssr
+# dist — production build is committed for cPanel deployment (no Node.js on server)
+# dist-ssr
 *.local
 
 # Editor directories and files

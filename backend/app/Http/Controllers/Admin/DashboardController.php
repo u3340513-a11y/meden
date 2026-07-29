@@ -20,8 +20,8 @@ class DashboardController extends Controller
             'orders_count' => Order::count(),
             'open_refunds' => Refund::whereIn('status', ['requested', 'approved'])->count(),
             'open_tickets' => SupportTicket::whereIn('status', ['open', 'in_progress'])->count(),
-            'total_revenue' => Order::where('status', 'delivered')->sum('total'),
-            'total_commission' => Order::where('status', 'delivered')->sum('commission_amount'),
+            'total_revenue' => Order::whereNotIn('status', ['pending', 'cancelled'])->sum('total'),
+            'total_commission' => Order::whereNotIn('status', ['pending', 'cancelled'])->sum('commission_amount'),
         ]);
     }
 }

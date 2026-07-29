@@ -16,7 +16,7 @@ class ProductResource extends JsonResource
             'description' => $this->when($request->routeIs('*show*') || !$request->is('api/v1/products'), $this->description),
             'price' => $this->price,
             'discounted_price' => $this->discounted_price,
-            'current_price' => $this->currentPrice(),
+            'current_price' => $this->current_price,
             'stock' => $this->stock,
             'condition' => $this->condition?->value,
             'condition_label' => $this->condition?->label(),

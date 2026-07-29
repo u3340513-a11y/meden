@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProductCondition;
 use App\Enums\ProductStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,13 @@ class Product extends Model
         'rejection_reason',
         'is_active',
     ];
+
+    protected $appends = ['current_price'];
+
+    protected function currentPrice(): Attribute
+    {
+        return Attribute::get(fn () => $this->discounted_price ?? $this->price);
+    }
 
     protected function casts(): array
     {
@@ -75,10 +83,5 @@ class Product extends Model
     public function scopePending($query)
     {
         return $query->where('status', ProductStatus::PENDING);
-    }
-
-    public function currentPrice(): float
-    {
-        return $this->discounted_price ?? $this->price;
     }
 }

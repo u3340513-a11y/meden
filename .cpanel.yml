@@ -1,0 +1,17 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/isla2053/public_html
+
+    - cp -r $REPO_DIR/frontend/dist/. $DEPLOYPATH/
+
+    - cp -r $REPO_DIR/backend/. $DEPLOYPATH/api_backend/
+    - mkdir -p $DEPLOYPATH/api && cp -r $REPO_DIR/backend/public-cpanel/. $DEPLOYPATH/api/
+
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction
+
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 artisan config:cache
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 artisan route:cache
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 artisan view:cache
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 artisan migrate --force
+    - cd $DEPLOYPATH/api_backend && /usr/local/bin/php8.3 artisan storage:link

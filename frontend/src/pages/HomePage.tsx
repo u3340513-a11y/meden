@@ -109,36 +109,45 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Floating product preview card */}
+            {/* Floating product preview card — son eklenen 3 ürün */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { emoji: '👗', name: 'Vintage Çiçek Desenli Midi Elbise', price: '249,90 ₺', old: '349,90 ₺', badge: '-29%' },
-                { emoji: '📱', name: 'iPhone 13 Pro Max 256GB', price: '42.000 ₺', old: '45.000 ₺', badge: '-7%' },
-                { emoji: '🧴', name: 'Hyaluronik Asit Serum + Nemlendirici', price: '299,90 ₺', old: '389,90 ₺', badge: '-23%' },
-              ].map((item, i) => (
-                <div key={i} style={{
-                  background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 16, padding: '14px 18px',
-                  display: 'flex', alignItems: 'center', gap: 14,
-                  transform: `translateX(${i * 8}px)`,
-                  transition: 'transform 0.2s',
-                }}>
-                  <span style={{ fontSize: 28, flexShrink: 0 }}>{item.emoji}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.name}
+              {(latestProducts || []).slice(0, 3).map((p, i) => {
+                const emoji = CATEGORY_ICONS[(p as any).category?.slug?.split('-')[0]] || '🛍️'
+                const discount = p.discounted_price ? Math.round((1 - p.current_price / p.price) * 100) : 0
+                const fmt = (n: number) => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺'
+                return (
+                  <Link key={p.id} to={`/urunler/${p.slug}`} style={{ textDecoration: 'none' }}>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 16, padding: '14px 18px',
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      transform: `translateX(${i * 8}px)`,
+                      transition: 'transform 0.2s, background 0.2s',
+                    }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.12)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)' }}>
+                      <span style={{ fontSize: 28, flexShrink: 0 }}>{emoji}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {p.name}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                          <span style={{ fontSize: 15, fontWeight: 800, color: '#E2B93B' }}>{fmt(p.current_price)}</span>
+                          {p.discounted_price && (
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{fmt(p.price)}</span>
+                          )}
+                        </div>
+                      </div>
+                      {discount > 0 && (
+                        <span style={{ fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 7px', borderRadius: 6, flexShrink: 0 }}>
+                          -{discount}%
+                        </span>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#E2B93B' }}>{item.price}</span>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{item.old}</span>
-                    </div>
-                  </div>
-                  <span style={{ fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 7px', borderRadius: 6, flexShrink: 0 }}>
-                    {item.badge}
-                  </span>
-                </div>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -173,19 +182,19 @@ export default function HomePage() {
               Tümünü Gör <ChevronRight style={{ width: 14, height: 14 }} />
             </Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(130px,1fr))', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 14 }}>
             {categories.map(cat => (
               <Link key={cat.id} to={`/urunler?category=${cat.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  borderRadius: 18, overflow: 'hidden', cursor: 'pointer',
+                  borderRadius: 18, overflow: 'hidden', cursor: 'pointer', height: '100%', boxSizing: 'border-box',
                   background: CATEGORY_GRADS[cat.slug] || 'linear-gradient(135deg,#e2e8f0,#cbd5e1)',
-                  padding: '28px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                  padding: '22px 16px', display: 'flex', alignItems: 'center', gap: 14,
                   transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
                   onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 28px rgba(0,0,0,0.15)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '' }}>
-                  <span style={{ fontSize: 36 }}>{CATEGORY_ICONS[cat.slug] || '🛍️'}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.3, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
+                  <span style={{ fontSize: 32, flexShrink: 0, width: 44, textAlign: 'center' }}>{CATEGORY_ICONS[cat.slug] || '🛍️'}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', lineHeight: 1.35, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
                     {cat.name}
                   </span>
                 </div>

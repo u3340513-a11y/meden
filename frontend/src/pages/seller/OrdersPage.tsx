@@ -21,12 +21,6 @@ const CARGO_PROVIDERS = [
   { value: 'surat', label: 'Sürat Kargo' },
 ]
 
-const TH: React.CSSProperties = {
-  textAlign: 'left', padding: '12px 16px',
-  fontSize: 11, fontWeight: 700, color: '#94a3b8',
-  textTransform: 'uppercase', letterSpacing: '0.08em',
-  background: '#f8fafc', borderBottom: '1px solid #e8edf2',
-}
 
 export default function SellerOrdersPage() {
   const qc = useQueryClient()
@@ -161,15 +155,16 @@ export default function SellerOrdersPage() {
                       <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
                         Teslimat Adresi
                       </div>
-                      {order.address ? (
+                      {order.shipping_address ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13 }}>
                             <MapPin style={{ width: 14, height: 14, color: '#ef4444', flexShrink: 0, marginTop: 1 }} />
                             <div>
-                              <div style={{ fontWeight: 700, color: '#1a1a2e', marginBottom: 3 }}>{order.address.title}</div>
-                              <div style={{ color: '#64748b', lineHeight: 1.5 }}>{order.address.address_line}</div>
+                              <div style={{ fontWeight: 700, color: '#1a1a2e', marginBottom: 3 }}>{order.shipping_address.title}</div>
+                              <div style={{ color: '#64748b', lineHeight: 1.5 }}>{order.shipping_address.address_line}</div>
                               <div style={{ color: '#94a3b8', marginTop: 3, fontSize: 12 }}>
-                                {order.address.district?.name}{order.address.district?.name ? ', ' : ''}{order.address.city?.name}
+                                {order.shipping_address.district}{order.shipping_address.district ? ', ' : ''}{order.shipping_address.city}
+                                {order.shipping_address.postal_code ? ` — ${order.shipping_address.postal_code}` : ''}
                               </div>
                             </div>
                           </div>
@@ -194,7 +189,7 @@ export default function SellerOrdersPage() {
                               </span>
                               <span style={{ fontSize: 12, color: '#64748b' }}>×{item.quantity}</span>
                               <span style={{ fontSize: 14, fontWeight: 800, color: '#0F5EA8' }}>
-                                {Number(item.price).toLocaleString('tr-TR')} ₺
+                                {Number(item.unit_price ?? item.price).toLocaleString('tr-TR')} ₺
                               </span>
                             </div>
                           ))}

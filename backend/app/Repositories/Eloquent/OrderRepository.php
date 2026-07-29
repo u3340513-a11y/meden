@@ -26,9 +26,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $query = $this->model->whereHas('items', fn ($q) => $q->where('seller_id', $sellerId))
             ->with([
                 'buyer:id,name,email,phone',
-                'address.city',
-                'address.district',
-                'items' => fn ($q) => $q->where('seller_id', $sellerId)->with('product:id,name,current_price'),
+                'items' => fn ($q) => $q->where('seller_id', $sellerId)->with('product:id,name,price,discounted_price'),
             ]);
 
         if (!empty($filters['status'])) {

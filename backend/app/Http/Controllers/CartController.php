@@ -19,7 +19,7 @@ class CartController extends Controller
                 'product_id' => $item->product_id,
                 'product_name' => $item->product->name,
                 'product_slug' => $item->product->slug,
-                'price' => $item->product->currentPrice(),
+                'price' => $item->product->current_price,
                 'quantity' => $item->quantity,
                 'cover_image' => $item->product->coverImage
                     ? asset("storage/{$item->product->coverImage->thumbnail_path}")

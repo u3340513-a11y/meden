@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
+import { Fragment } from 'react'
 import api from '@/lib/api'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Truck } from 'lucide-react'
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> = {
   pending: { label: 'Bekliyor', color: '#d97706', bg: '#fffbeb' },
@@ -8,6 +9,16 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
   shipped: { label: 'Kargoda', color: '#7c3aed', bg: '#f5f3ff' },
   delivered: { label: 'Teslim Edildi', color: '#059669', bg: '#ecfdf5' },
   cancelled: { label: 'İptal', color: '#dc2626', bg: '#fff5f5' },
+}
+
+const CARGO_PROVIDER_LABELS: Record<string, string> = {
+  yurtici: 'Yurtiçi Kargo',
+  aras: 'Aras Kargo',
+  mng: 'MNG Kargo',
+  ptt: 'PTT Kargo',
+  surat: 'Sürat Kargo',
+  ups: 'UPS',
+  other: 'Diğer',
 }
 
 const TH: React.CSSProperties = {
@@ -64,28 +75,43 @@ export default function OrdersPage() {
               <tbody>
                 {list.map((order: any, idx: number) => {
                   const s = STATUS_MAP[order.status] || { label: order.status, color: '#64748b', bg: '#f1f5f9' }
+                  const isLast = idx === list.length - 1
                   return (
-                    <tr key={order.id}
-                      style={{ borderBottom: idx < list.length - 1 ? '1px solid #f1f5f9' : 'none', transition: 'background 0.12s' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                      <td style={{ padding: '14px 16px' }}>
-                        <code style={{ fontSize: 12, fontWeight: 700, background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: 6 }}>
-                          {order.order_no}
-                        </code>
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, color: s.color, background: s.bg }}>
-                          {s.label}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 16px', fontSize: 15, fontWeight: 800, color: '#0F5EA8' }}>
-                        {Number(order.total).toLocaleString('tr-TR')} ₺
-                      </td>
-                      <td style={{ padding: '14px 16px', fontSize: 12, color: '#94a3b8' }}>
-                        {new Date(order.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </td>
-                    </tr>
+                    <Fragment key={order.id}>
+                      <tr
+                        style={{ borderBottom: (isLast && !order.cargo_tracking_no) ? 'none' : '1px solid #f1f5f9', transition: 'background 0.12s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <td style={{ padding: '14px 16px' }}>
+                          <code style={{ fontSize: 12, fontWeight: 700, background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: 6 }}>
+                            {order.order_no}
+                          </code>
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, color: s.color, background: s.bg }}>
+                            {s.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px', fontSize: 15, fontWeight: 800, color: '#0F5EA8' }}>
+                          {Number(order.total).toLocaleString('tr-TR')} ₺
+                        </td>
+                        <td style={{ padding: '14px 16px', fontSize: 12, color: '#94a3b8' }}>
+                          {new Date(order.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </td>
+                      </tr>
+                      {order.cargo_tracking_no && (
+                        <tr style={{ borderBottom: isLast ? 'none' : '1px solid #f1f5f9' }}>
+                          <td colSpan={4} style={{ padding: '0 16px 14px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#ecfeff', borderRadius: 10, border: '1px solid #a5f3fc' }}>
+                              <Truck style={{ width: 16, height: 16, color: '#0891b2', flexShrink: 0 }} />
+                              <div style={{ fontSize: 13, color: '#0891b2' }}>
+                                <strong>{CARGO_PROVIDER_LABELS[order.cargo_provider] || order.cargo_provider}</strong> — Takip No: <code style={{ fontWeight: 700 }}>{order.cargo_tracking_no}</code>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   )
                 })}
               </tbody>

@@ -72,13 +72,13 @@ class OrderController extends Controller
                 'seller_id' => $item->product->seller_id,
                 'product_snapshot' => [
                     'name' => $item->product->name,
-                    'price' => $item->product->currentPrice(),
+                    'price' => $item->product->current_price,
                     'condition' => $item->product->condition?->label(),
                     'image' => $item->product->coverImage?->thumbnail_path,
                 ],
                 'quantity' => $item->quantity,
-                'unit_price' => $item->product->currentPrice(),
-                'total' => $item->product->currentPrice() * $item->quantity,
+                'unit_price' => $item->product->current_price,
+                'total' => $item->product->current_price * $item->quantity,
             ]);
 
             $item->product->decrement('stock', $item->quantity);

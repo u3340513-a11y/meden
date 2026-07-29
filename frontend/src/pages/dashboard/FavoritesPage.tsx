@@ -59,8 +59,8 @@ export default function FavoritesPage() {
             <div key={fav.id} className="card" style={{ overflow: 'hidden', padding: 0, position: 'relative' }}>
               {/* Thumbnail */}
               <div style={{ aspectRatio: '1', background: 'linear-gradient(135deg,#f8fafc,#e2e8f0)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                {fav.product?.images?.[0] ? (
-                  <img src={fav.product.images[0].url} alt={fav.product?.name}
+                {fav.product?.cover_image ? (
+                  <img src={fav.product.cover_image.thumbnail_path?.startsWith('http') ? fav.product.cover_image.thumbnail_path : `/storage/${fav.product.cover_image.thumbnail_path}`} alt={fav.product?.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ fontSize: 40 }}>🛍️</span>
@@ -84,7 +84,7 @@ export default function FavoritesPage() {
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 15, fontWeight: 800, color: '#0F5EA8' }}>
-                    {Number(fav.product?.current_price).toLocaleString('tr-TR')} ₺
+                    {Number(fav.product?.current_price ?? fav.product?.discounted_price ?? fav.product?.price).toLocaleString('tr-TR')} ₺
                   </span>
                   <Link to={`/urunler/${fav.product?.slug}`}
                     style={{ color: '#94a3b8', display: 'flex' }}>
