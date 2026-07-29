@@ -24,6 +24,7 @@ import ReferralPage from '@/pages/dashboard/ReferralPage'
 import SellerDashboardPage from '@/pages/seller/DashboardPage'
 import SellerProductsPage from '@/pages/seller/ProductsPage'
 import SellerAddProductPage from '@/pages/seller/AddProductPage'
+import SellerEditProductPage from '@/pages/seller/EditProductPage'
 import SellerOrdersPage from '@/pages/seller/OrdersPage'
 
 import AdminDashboardPage from '@/pages/admin/DashboardPage'
@@ -100,6 +101,7 @@ export default function App() {
           <Route path="/satis/panel" element={<SellerDashboardPage />} />
           <Route path="/satis/urunlerim" element={<SellerProductsPage />} />
           <Route path="/satis/urunlerim/yeni" element={<SellerAddProductPage />} />
+          <Route path="/satis/urunlerim/:id/duzenle" element={<SellerEditProductPage />} />
           <Route path="/satis/siparislerim" element={<SellerOrdersPage />} />
 
           <Route element={<AdminRoute />}>
