@@ -1,6 +1,25 @@
 import { create } from 'zustand'
-import api, { csrf } from '@/lib/api'
+import api from '@/lib/api'
 import type { User } from '@/types'
+
+const TOKEN_KEY = 'auth_token'
+
+export function setAuthToken(token: string | null) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token)
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  } else {
+    localStorage.removeItem(TOKEN_KEY)
+    delete api.defaults.headers.common['Authorization']
+  }
+}
+
+export function initAuthToken() {
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  }
+}
 
 interface AuthState {
   user: User | null
@@ -19,19 +38,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
 
   login: async (email, password) => {
-    await csrf()
-    await api.post('/auth/login', { email, password })
-    const { data } = await api.get('/user')
-    set({ user: data.data, isAuthenticated: true })
+    const { data } = await api.post('/auth/login', { email, password })
+    setAuthToken(data.data.token)
+    set({ user: data.data.user, isAuthenticated: true })
   },
 
   register: async (formData) => {
-    await csrf()
     await api.post('/auth/register', formData)
   },
 
   logout: async () => {
-    await api.post('/auth/logout')
+    try { await api.post('/auth/logout') } catch {}
+    setAuthToken(null)
     set({ user: null, isAuthenticated: false })
   },
 
@@ -40,9 +58,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data } = await api.get('/user')
       set({ user: data.data, isAuthenticated: true, isLoading: false })
     } catch {
+      setAuthToken(null)
       set({ user: null, isAuthenticated: false, isLoading: false })
     }
   },
 
   setUser: (user) => set({ user, isAuthenticated: !!user }),
 }))
+

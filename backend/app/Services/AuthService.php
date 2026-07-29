@@ -39,33 +39,33 @@ class AuthService
         return $user;
     }
 
-    public function login(array $credentials): User
+    public function login(array $credentials): array
     {
-        if (!Auth::attempt($credentials)) {
+        $user = $this->userRepository->findByEmail($credentials['email']);
+
+        if (!$user || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['E-posta veya şifre hatalı.'],
             ]);
         }
 
-        $user = Auth::user();
-
         if (!$user->hasVerifiedEmail()) {
-            Auth::logout();
             throw ValidationException::withMessages([
                 'email' => ['Lütfen önce e-posta adresinizi doğrulayın.'],
             ]);
         }
 
-        return $user;
+        $user->tokens()->delete();
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return ['user' => $user, 'token' => $token];
     }
 
     public function logout(): void
     {
-        Auth::guard('web')->logout();
-        try {
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
-        } catch (\Exception) {
+        $user = Auth::user();
+        if ($user) {
+            $user->currentAccessToken()->delete();
         }
     }
 

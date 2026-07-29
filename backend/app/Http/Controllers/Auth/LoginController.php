@@ -15,10 +15,10 @@ class LoginController extends Controller
 
     public function __invoke(LoginRequest $request)
     {
-        $user = $this->authService->login($request->validated());
+        $result = $this->authService->login($request->validated());
 
         return $this->success(
-            ['user' => new UserResource($user)],
+            ['user' => new UserResource($result['user']), 'token' => $result['token']],
             'Giriş başarılı.'
         );
     }
