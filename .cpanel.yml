@@ -1,18 +1,27 @@
 ---
 deployment:
   tasks:
-    - >
-      DEPLOYPATH=/home/isla2053/public_html/xn--medeniyetpazar-jgc.com &&
-      mkdir -p $DEPLOYPATH &&
-      cp -r $REPO_DIR/frontend/dist/. $DEPLOYPATH/ &&
-      cp -r $REPO_DIR/backend/. $DEPLOYPATH/api_backend/ &&
-      mkdir -p $DEPLOYPATH/api &&
-      cp -r $REPO_DIR/backend/public-cpanel/. $DEPLOYPATH/api/ &&
-      mkdir -p $DEPLOYPATH/api_backend/storage/logs &&
-      mkdir -p $DEPLOYPATH/api_backend/storage/framework/cache &&
-      mkdir -p $DEPLOYPATH/api_backend/storage/framework/sessions &&
-      mkdir -p $DEPLOYPATH/api_backend/storage/framework/views &&
-      mkdir -p $DEPLOYPATH/api_backend/bootstrap/cache &&
-      chmod -R 775 $DEPLOYPATH/api_backend/storage $DEPLOYPATH/api_backend/bootstrap/cache &&
-      cd $DEPLOYPATH/api_backend &&
-      composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || true
+    - echo "=== DEPLOY START ===" >> /home/isla2053/deploy.log 2>&1
+    - echo "REPO_DIR=$REPO_DIR" >> /home/isla2053/deploy.log 2>&1
+    - ls /home/isla2053/repositories/meden/ >> /home/isla2053/deploy.log 2>&1
+
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api
+
+    - cp -r /home/isla2053/repositories/meden/frontend/dist/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/
+    - echo "frontend copy done" >> /home/isla2053/deploy.log 2>&1
+
+    - cp -r /home/isla2053/repositories/meden/backend/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/
+    - echo "backend copy done" >> /home/isla2053/deploy.log 2>&1
+
+    - cp -r /home/isla2053/repositories/meden/backend/public-cpanel/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api/
+    - echo "api copy done" >> /home/isla2053/deploy.log 2>&1
+
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/logs
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/cache
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/sessions
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/views
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
+    - chmod -R 775 /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
+
+    - echo "=== DEPLOY END ===" >> /home/isla2053/deploy.log 2>&1
