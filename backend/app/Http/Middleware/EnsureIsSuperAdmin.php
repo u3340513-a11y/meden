@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+
+class EnsureIsSuperAdmin
+{
+    public function handle(Request $request, Closure $next)
+    {
+        if (!$request->user() || !$request->user()->isSuperAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bu işlem için süper admin yetkisi gerekli.',
+            ], 403);
+        }
+
+        return $next($request);
+    }
+}

@@ -1,0 +1,2 @@
+# Ödeme
+PayTR / iyzico, komisyon.

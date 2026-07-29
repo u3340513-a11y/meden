@@ -1,0 +1,2 @@
+# Kimlik Doğrulama
+Laravel Sanctum.
