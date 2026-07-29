@@ -9,6 +9,9 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteCond %{REQUEST_URI} ^/api [NC]
 RewriteRule ^ api/index.php [L,QSA]
 
+# /storage/* dosyalarını api_backend/storage/app/public/'e yönlendir
+RewriteRule ^storage/(.*)$ api_backend/storage/app/public/$1 [L]
+
 # Gerçek dosya/klasör varsa direkt sun
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
@@ -16,3 +19,4 @@ RewriteRule ^ - [L]
 
 # Diğer tüm istekleri React SPA'ya yönlendir
 RewriteRule ^ /index.html [L]
+

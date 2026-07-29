@@ -25,13 +25,13 @@ class ProductResource extends JsonResource
             'status_label' => $this->status?->label(),
             'view_count' => $this->view_count,
             'cover_image' => $this->whenLoaded('coverImage', fn () =>
-                $this->coverImage ? asset("storage/{$this->coverImage->thumbnail_path}") : null
+                $this->coverImage ? url("/storage/{$this->coverImage->thumbnail_path}") : null
             ),
             'images' => $this->whenLoaded('images', fn () =>
                 $this->images->map(fn ($img) => [
                     'id' => $img->id,
-                    'url' => asset("storage/{$img->path}"),
-                    'thumbnail' => asset("storage/{$img->thumbnail_path}"),
+                    'url' => url("/storage/{$img->path}"),
+                    'thumbnail' => url("/storage/{$img->thumbnail_path}"),
                     'is_cover' => $img->is_cover,
                 ])
             ),
