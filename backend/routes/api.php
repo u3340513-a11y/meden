@@ -81,6 +81,7 @@ Route::prefix('v1')->group(function () {
             Route::get('dashboard', [Seller\DashboardController::class, 'index']);
             Route::get('products', [Seller\ProductController::class, 'index']);
             Route::post('products', [Seller\ProductController::class, 'store']);
+            Route::get('products/{id}', [Seller\ProductController::class, 'show']);
             Route::put('products/{id}', [Seller\ProductController::class, 'update']);
             Route::delete('products/{id}', [Seller\ProductController::class, 'destroy']);
             Route::get('orders', [Seller\OrderController::class, 'index']);

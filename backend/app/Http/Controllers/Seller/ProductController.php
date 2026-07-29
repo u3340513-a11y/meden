@@ -25,6 +25,15 @@ class ProductController extends Controller
         return $this->success(ProductResource::collection($products)->response()->getData(true));
     }
 
+    public function show($id)
+    {
+        $product = \App\Models\Product::with(['images', 'coverImage', 'category'])
+            ->where('seller_id', auth()->id())
+            ->findOrFail($id);
+
+        return $this->success((new ProductResource($product))->toArray(request()));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

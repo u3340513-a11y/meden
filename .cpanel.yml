@@ -11,7 +11,8 @@ deployment:
     - cp -r /home/isla2053/repositories/meden/frontend/dist/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/
     - echo "frontend copy done" >> /home/isla2053/deploy.log 2>&1
 
-    - rsync -a --exclude='storage/app/public' /home/isla2053/repositories/meden/backend/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/
+    - rsync -a --exclude='storage/app/public' --exclude='.env' /home/isla2053/repositories/meden/backend/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/
+    - cp /home/isla2053/repositories/meden/backend/.env.production /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/.env
     - echo "backend copy done" >> /home/isla2053/deploy.log 2>&1
 
     - cp -r /home/isla2053/repositories/meden/backend/public-cpanel/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api/
