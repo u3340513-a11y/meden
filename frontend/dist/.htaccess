@@ -1,0 +1,14 @@
+Options -MultiViews
+RewriteEngine On
+
+# API isteklerini dokunma
+RewriteCond %{REQUEST_URI} ^/api [NC]
+RewriteRule ^ - [L]
+
+# Gerçek dosya/klasör varsa direkt sun
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Diğer tüm istekleri index.html'e yönlendir (React Router)
+RewriteRule ^ /index.html [L]
