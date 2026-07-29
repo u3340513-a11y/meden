@@ -1,15 +1,37 @@
 <?php
-$path = ltrim($_SERVER['PATH_INFO'] ?? ($_SERVER['REQUEST_URI'] ? preg_replace('#^/storage/?#', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) : ''), '/');
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$pathInfo = $_SERVER['PATH_INFO'] ?? null;
 
-if (empty($path) || strpos($path, '..') !== false) {
+if ($pathInfo) {
+    $path = ltrim($pathInfo, '/');
+} else {
+    $parsed = parse_url($requestUri, PHP_URL_PATH);
+    $path = preg_replace('#^/storage/?#', '', $parsed);
+}
+
+$basePath = __DIR__ . '/api_backend/storage/app/public';
+$realBase = realpath($basePath);
+
+if (isset($_GET['debug'])) {
+    echo "REQUEST_URI: $requestUri\n";
+    echo "PATH_INFO: " . ($pathInfo ?? 'NULL') . "\n";
+    echo "Parsed path: $path\n";
+    echo "Base: $basePath\n";
+    echo "RealBase: " . ($realBase ?: 'FALSE') . "\n";
+    echo "Full: $basePath/$path\n";
+    echo "Exists: " . (file_exists("$basePath/$path") ? 'YES' : 'NO') . "\n";
+    echo "RealFile: " . (realpath("$basePath/$path") ?: 'FALSE') . "\n";
+    exit;
+}
+
+if (empty($path) || strpos($path, '..') !== false || !$realBase) {
     http_response_code(404);
     exit('Not Found');
 }
 
-$basePath = realpath(__DIR__ . '/api_backend/storage/app/public');
 $file = realpath($basePath . '/' . $path);
 
-if (!$file || strpos($file, $basePath) !== 0 || !is_file($file)) {
+if (!$file || strpos($file, $realBase) !== 0 || !is_file($file)) {
     http_response_code(404);
     exit('Not Found');
 }
@@ -25,6 +47,5 @@ $mime = $mimes[$ext] ?? (function_exists('mime_content_type') ? mime_content_typ
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($file));
 header('Cache-Control: public, max-age=31536000, immutable');
-header('ETag: "' . md5_file($file) . '"');
 readfile($file);
 exit;
