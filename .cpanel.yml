@@ -24,4 +24,8 @@ deployment:
     - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
     - chmod -R 775 /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
 
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public
+    - ln -sfn /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/storage
+    - echo "storage symlink done" >> /home/isla2053/deploy.log 2>&1
+
     - echo "=== DEPLOY END ===" >> /home/isla2053/deploy.log 2>&1
