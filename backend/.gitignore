@@ -20,7 +20,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+# vendor/ — included in repo for cPanel deployment (no composer on server)
+# /vendor
 _ide_helper.php
 Homestead.json
 Homestead.yaml
