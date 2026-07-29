@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/isla2053/public_html
+    - export DEPLOYPATH=/home/isla2053/public_html/xn--medeniyetpazar-jgc.com
 
     - cp -r $REPO_DIR/frontend/dist/. $DEPLOYPATH/
 
