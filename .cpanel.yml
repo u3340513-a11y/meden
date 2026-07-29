@@ -1,28 +1,18 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/isla2053/public_html/xn--medeniyetpazar-jgc.com
-    - export PHP=$(which php8.3 2>/dev/null || which php8.2 2>/dev/null || which php 2>/dev/null)
-    - export COMPOSER=$(which composer 2>/dev/null || echo "/usr/local/bin/composer")
-
-    - mkdir -p $DEPLOYPATH
-
-    - cp -r $REPO_DIR/frontend/dist/. $DEPLOYPATH/
-
-    - cp -r $REPO_DIR/backend/. $DEPLOYPATH/api_backend/
-    - mkdir -p $DEPLOYPATH/api && cp -r $REPO_DIR/backend/public-cpanel/. $DEPLOYPATH/api/
-
-    - mkdir -p $DEPLOYPATH/api_backend/storage/logs
-    - mkdir -p $DEPLOYPATH/api_backend/storage/framework/cache
-    - mkdir -p $DEPLOYPATH/api_backend/storage/framework/sessions
-    - mkdir -p $DEPLOYPATH/api_backend/storage/framework/views
-    - mkdir -p $DEPLOYPATH/api_backend/bootstrap/cache
-    - chmod -R 775 $DEPLOYPATH/api_backend/storage $DEPLOYPATH/api_backend/bootstrap/cache
-
-    - cd $DEPLOYPATH/api_backend && $PHP $COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1 || true
-
-    - cd $DEPLOYPATH/api_backend && $PHP artisan config:cache 2>&1 || true
-    - cd $DEPLOYPATH/api_backend && $PHP artisan route:cache 2>&1 || true
-    - cd $DEPLOYPATH/api_backend && $PHP artisan view:cache 2>&1 || true
-    - cd $DEPLOYPATH/api_backend && $PHP artisan migrate --force 2>&1 || true
-    - cd $DEPLOYPATH/api_backend && $PHP artisan storage:link 2>&1 || true
+    - >
+      DEPLOYPATH=/home/isla2053/public_html/xn--medeniyetpazar-jgc.com &&
+      mkdir -p $DEPLOYPATH &&
+      cp -r $REPO_DIR/frontend/dist/. $DEPLOYPATH/ &&
+      cp -r $REPO_DIR/backend/. $DEPLOYPATH/api_backend/ &&
+      mkdir -p $DEPLOYPATH/api &&
+      cp -r $REPO_DIR/backend/public-cpanel/. $DEPLOYPATH/api/ &&
+      mkdir -p $DEPLOYPATH/api_backend/storage/logs &&
+      mkdir -p $DEPLOYPATH/api_backend/storage/framework/cache &&
+      mkdir -p $DEPLOYPATH/api_backend/storage/framework/sessions &&
+      mkdir -p $DEPLOYPATH/api_backend/storage/framework/views &&
+      mkdir -p $DEPLOYPATH/api_backend/bootstrap/cache &&
+      chmod -R 775 $DEPLOYPATH/api_backend/storage $DEPLOYPATH/api_backend/bootstrap/cache &&
+      cd $DEPLOYPATH/api_backend &&
+      composer install --no-dev --optimize-autoloader --no-interaction 2>&1 || true
