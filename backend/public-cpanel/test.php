@@ -1,46 +1,74 @@
 <?php
+header('Content-Type: text/plain; charset=utf-8');
+
 $root = $_SERVER['DOCUMENT_ROOT'];
-$storagePath = $root . '/api_backend/storage/app/public';
+$base = $root . '/api_backend/storage/app/public';
 
-echo '<pre>';
+echo "=== STORAGE KONTROL ===\n";
 echo "DOCUMENT_ROOT: $root\n";
-echo "Storage path: $storagePath\n";
-echo "Storage exists: " . (is_dir($storagePath) ? 'YES' : 'NO') . "\n\n";
+echo "Storage base: $base\n";
+echo "Exists: " . (is_dir($base) ? 'EVET' : 'HAYIR') . "\n\n";
 
-if (is_dir($storagePath)) {
-    echo "Storage contents:\n";
-    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($storagePath, RecursiveDirectoryIterator::SKIP_DOTS));
-    foreach ($iterator as $file) {
-        echo str_replace($storagePath, '', $file->getPathname()) . " (" . $file->getSize() . " bytes)\n";
+echo "=== STORAGE İÇERİK ===\n";
+if (is_dir($base)) {
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base, RecursiveDirectoryIterator::SKIP_DOTS));
+    $count = 0;
+    foreach ($it as $f) {
+        echo str_replace($base, '', $f->getPathname()) . " (" . $f->getSize() . " b)\n";
+        $count++;
     }
+    if ($count === 0) echo "(BOŞ — hiç dosya yok)\n";
 } else {
-    echo "Trying alternative paths:\n";
-    $alts = [
-        $root . '/api_backend/storage',
-        $root . '/api_backend/storage/app',
-        dirname($root) . '/api_backend/storage/app/public',
-    ];
-    foreach ($alts as $p) {
-        echo "$p => " . (is_dir($p) ? 'EXISTS' : 'NOT FOUND') . "\n";
-    }
+    echo "Dizin mevcut değil!\n";
 }
 
-echo "\n--- .htaccess check ---\n";
-echo "Root .htaccess exists: " . (file_exists($root . '/.htaccess') ? 'YES' : 'NO') . "\n";
-$htaccess = file_get_contents($root . '/.htaccess');
-echo "Contains storage rule: " . (strpos($htaccess, 'storage') !== false ? 'YES' : 'NO') . "\n";
-echo "\n--- Product Images DB ---\n";
+echo "\n=== .ENV KONTROL ===\n";
+$envFile = $root . '/api_backend/.env';
+if (file_exists($envFile)) {
+    $env = file_get_contents($envFile);
+    preg_match('/APP_URL=(.*)/', $env, $m1);
+    preg_match('/DB_CONNECTION=(.*)/', $env, $m2);
+    preg_match('/DB_DATABASE=(.*)/', $env, $m3);
+    echo "APP_URL: " . trim($m1[1] ?? '?') . "\n";
+    echo "DB_CONNECTION: " . trim($m2[1] ?? '?') . "\n";
+    echo "DB_DATABASE: " . trim($m3[1] ?? '?') . "\n";
+} else {
+    echo ".env BULUNAMADI!\n";
+}
 
+echo "\n=== DB İÇERİK (product_images) ===\n";
 define('LARAVEL_START', microtime(true));
-$apiBackendPath = dirname(__DIR__) . '/api_backend';
-require $apiBackendPath . '/vendor/autoload.php';
-$app = require_once $apiBackendPath . '/bootstrap/app.php';
+$appPath = $root . '/api_backend';
+require $appPath . '/vendor/autoload.php';
+$app = require_once $appPath . '/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
-$images = \DB::table('product_images')->get();
+$images = \DB::table('product_images')->limit(10)->get();
+echo "Toplam kayıt: " . \DB::table('product_images')->count() . "\n";
 foreach ($images as $img) {
     echo "ID:{$img->id} product:{$img->product_id} path:{$img->path}\n";
-    $fullPath = $storagePath . '/' . $img->path;
-    echo "  Full: $fullPath => " . (file_exists($fullPath) ? 'EXISTS (' . filesize($fullPath) . ' bytes)' : 'NOT FOUND') . "\n";
+    $full = $base . '/' . $img->path;
+    echo "  -> " . (file_exists($full) ? "MEVCUT (" . filesize($full) . " b)" : "YOK!") . "\n";
 }
-echo '</pre>';
+
+echo "\n=== url() ÇIKTISI ===\n";
+if (count($images) > 0) {
+    $first = $images[0];
+    echo "url('/storage/{$first->path}'): " . url("/storage/{$first->path}") . "\n";
+}
+
+echo "\n=== PRODUCT API TEST ===\n";
+$lastProduct = \DB::table('products')->orderByDesc('id')->first();
+if ($lastProduct) {
+    echo "Son ürün: id={$lastProduct->id} name={$lastProduct->name}\n";
+    $product = \App\Models\Product::with(['images', 'coverImage', 'category'])->find($lastProduct->id);
+    $resource = new \App\Http\Resources\ProductResource($product);
+    $data = $resource->toArray(request());
+    echo "cover_image: " . ($data['cover_image'] ?? 'NULL') . "\n";
+    echo "description: " . (isset($data['description']) ? substr($data['description'], 0, 50) : 'MISSING!') . "\n";
+    echo "category: " . json_encode($data['category'] ?? 'NULL') . "\n";
+    echo "images count: " . (is_countable($data['images'] ?? null) ? count($data['images']) : 'MISSING') . "\n";
+    if (!empty($data['images'])) {
+        echo "first image url: " . $data['images'][0]['url'] . "\n";
+    }
+}
