@@ -46,6 +46,6 @@ abstract class Controller
             return $path;
         }
 
-        return rtrim(config('app.url'), '/') . "/storage/{$path}";
+        return "/storage/{$path}";
     }
 }

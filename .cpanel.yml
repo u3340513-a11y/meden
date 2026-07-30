@@ -29,4 +29,9 @@ deployment:
     - ln -sfn /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/storage
     - echo "storage symlink done" >> /home/isla2053/deploy.log 2>&1
 
+    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan config:clear >> /home/isla2053/deploy.log 2>&1
+    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan route:clear >> /home/isla2053/deploy.log 2>&1
+    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan view:clear >> /home/isla2053/deploy.log 2>&1
+    - echo "cache cleared" >> /home/isla2053/deploy.log 2>&1
+
     - echo "=== DEPLOY END ===" >> /home/isla2053/deploy.log 2>&1
