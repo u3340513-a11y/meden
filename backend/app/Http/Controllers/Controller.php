@@ -35,4 +35,17 @@ abstract class Controller
     {
         return response()->json(null, 204);
     }
+
+    protected function resolveImageUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return url("/storage/{$path}");
+    }
 }

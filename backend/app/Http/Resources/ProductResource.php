@@ -25,13 +25,13 @@ class ProductResource extends JsonResource
             'status_label' => $this->status?->label(),
             'view_count' => $this->view_count,
             'cover_image' => $this->whenLoaded('coverImage', fn () =>
-                $this->coverImage ? url("/storage/{$this->coverImage->thumbnail_path}") : null
+                $this->coverImage ? self::resolveImageUrl($this->coverImage->thumbnail_path) : null
             ),
             'images' => $this->whenLoaded('images', fn () =>
                 $this->images->map(fn ($img) => [
                     'id' => $img->id,
-                    'url' => url("/storage/{$img->path}"),
-                    'thumbnail' => url("/storage/{$img->thumbnail_path}"),
+                    'url' => self::resolveImageUrl($img->path),
+                    'thumbnail' => self::resolveImageUrl($img->thumbnail_path),
                     'is_cover' => $img->is_cover,
                 ])
             ),
@@ -46,5 +46,18 @@ class ProductResource extends JsonResource
             ]),
             'created_at' => $this->created_at?->toISOString(),
         ];
+    }
+
+    private static function resolveImageUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return url("/storage/{$path}");
     }
 }

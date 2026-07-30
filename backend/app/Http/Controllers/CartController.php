@@ -22,7 +22,7 @@ class CartController extends Controller
                 'price' => $item->product->current_price,
                 'quantity' => $item->quantity,
                 'cover_image' => $item->product->coverImage
-                    ? asset("storage/{$item->product->coverImage->thumbnail_path}")
+                    ? $this->resolveImageUrl($item->product->coverImage->thumbnail_path)
                     : null,
                 'stock' => $item->product->stock,
             ]),
