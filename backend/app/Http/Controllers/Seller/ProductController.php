@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -76,6 +78,7 @@ class ProductController extends Controller
         $product = auth()->user()->products()->findOrFail($id);
 
         $data = $request->validate([
+            'category_id' => ['sometimes', 'exists:categories,id'],
             'name' => ['sometimes', 'string', 'max:200'],
             'description' => ['sometimes', 'string'],
             'price' => ['sometimes', 'numeric', 'min:1'],
@@ -84,10 +87,48 @@ class ProductController extends Controller
             'condition' => ['sometimes', 'in:used,lightly_used,new'],
             'variant_data' => ['nullable', 'array'],
             'is_active' => ['sometimes', 'boolean'],
+            'images' => ['sometimes', 'array', 'max:10'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'remove_images' => ['sometimes', 'array'],
+            'remove_images.*' => ['integer'],
         ]);
 
-        $product->update($data);
-        return $this->success(new ProductResource($product), 'Ürün güncellendi.');
+        $product->update(Arr::except($data, ['images', 'remove_images']));
+
+        if (!empty($data['remove_images'])) {
+            $toDelete = $product->images()->whereIn('id', $data['remove_images'])->get();
+            foreach ($toDelete as $img) {
+                Storage::disk('public')->delete($img->path);
+                if ($img->thumbnail_path && $img->thumbnail_path !== $img->path) {
+                    Storage::disk('public')->delete($img->thumbnail_path);
+                }
+                $img->delete();
+            }
+        }
+
+        if ($request->hasFile('images')) {
+            $currentCount = $product->images()->count();
+            foreach ($request->file('images') as $i => $file) {
+                if ($currentCount + $i >= 10) break;
+                $path = $file->store("products/{$product->id}", 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'thumbnail_path' => $path,
+                    'sort_order' => $currentCount + $i,
+                    'is_cover' => ($currentCount === 0 && $i === 0),
+                ]);
+            }
+        }
+
+        if ($product->images()->where('is_cover', true)->doesntExist()) {
+            $first = $product->images()->orderBy('sort_order')->first();
+            if ($first) $first->update(['is_cover' => true]);
+        }
+
+        return $this->success(
+            new ProductResource($product->load(['images', 'coverImage', 'category'])),
+            'Ürün güncellendi.'
+        );
     }
 
     public function destroy(int $id)
