@@ -59,7 +59,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     public function getSellerProducts(int $sellerId, array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        $query = $this->model->where('seller_id', $sellerId)->with('coverImage');
+        $query = $this->model->where('seller_id', $sellerId)->with(['coverImage', 'images', 'category']);
 
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);

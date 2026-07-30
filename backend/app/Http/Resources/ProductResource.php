@@ -14,7 +14,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->when(
-                !$request->is('*/products') && !$request->is('products'),
+                !preg_match('#/products$#', $request->path()),
                 fn () => $this->description
             ),
             'price' => $this->price,
