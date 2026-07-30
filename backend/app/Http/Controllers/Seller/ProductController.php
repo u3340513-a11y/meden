@@ -33,7 +33,7 @@ class ProductController extends Controller
             ->where('seller_id', auth()->id())
             ->findOrFail($id);
 
-        return $this->success((new ProductResource($product))->toArray(request()));
+        return $this->success(new ProductResource($product));
     }
 
     public function store(Request $request)
@@ -68,7 +68,7 @@ class ProductController extends Controller
         }
 
         return $this->created(
-            new ProductResource($product->load('images')),
+            new ProductResource($product->load(['images', 'coverImage', 'category'])),
             'Ürün oluşturuldu. Onay bekliyor.'
         );
     }
