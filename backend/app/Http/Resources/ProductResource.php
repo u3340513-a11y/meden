@@ -61,6 +61,6 @@ class ProductResource extends JsonResource
             return $path;
         }
 
-        return url("/storage/{$path}");
+        return rtrim(config('app.url'), '/') . "/storage/{$path}";
     }
 }
