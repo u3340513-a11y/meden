@@ -96,8 +96,12 @@ export default function SellerProductsPage() {
                             background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           }}>
                             {p.cover_image
-                              ? <img src={p.cover_image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              : <Package style={{ width: 18, height: 18, color: '#cbd5e1' }} />}
+                              ? <img src={p.cover_image} alt={p.name}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                                />
+                              : null}
+                            <Package style={{ width: 18, height: 18, color: '#cbd5e1', display: p.cover_image ? 'none' : 'block' }} />
                           </div>
                           <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>
                             {p.name}

@@ -16,10 +16,17 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = $this->productRepository->paginate(
-            $request->integer('per_page', 15),
-            $request->only('status', 'search')
-        );
+        $query = \App\Models\Product::with(['coverImage', 'images', 'seller:id,name', 'category']);
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $products = $query->latest()->paginate($request->integer('per_page', 15));
 
         return $this->success(ProductResource::collection($products)->response()->getData(true));
     }

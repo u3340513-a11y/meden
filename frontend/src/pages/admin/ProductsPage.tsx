@@ -97,11 +97,13 @@ export default function AdminProductsPage() {
                   width: 60, height: 60, borderRadius: 12, overflow: 'hidden', flexShrink: 0,
                   background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {p.images?.[0] ? (
-                    <img src={p.images[0].url} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <Package style={{ width: 24, height: 24, color: '#cbd5e1' }} />
-                  )}
+                  {p.cover_image ? (
+                    <img src={p.cover_image} alt={p.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                    />
+                  ) : null}
+                  <Package style={{ width: 24, height: 24, color: '#cbd5e1', display: p.cover_image ? 'none' : 'block' }} />
                 </div>
 
                 {/* Info */}

@@ -204,10 +204,11 @@ export default function ProductsPage() {
                       <div style={{ aspectRatio: '1', background: 'linear-gradient(135deg,#f8fafc,#e2e8f0)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
                         {product.cover_image ? (
                           <img src={product.cover_image} alt={product.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          <ShoppingBag style={{ width: 40, height: 40, color: '#cbd5e1' }} />
-                        )}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                          />
+                        ) : null}
+                        <ShoppingBag style={{ width: 40, height: 40, color: '#cbd5e1', display: product.cover_image ? 'none' : 'block' }} />
                         {/* Condition badge */}
                         {(product as any).condition && (
                           <span style={{

@@ -76,9 +76,12 @@ export default function CartPage() {
               <Link to={`/urunler/${item.product_slug}`}
                 style={{ width: 84, height: 84, borderRadius: 12, overflow: 'hidden', flexShrink: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {item.cover_image
-                  ? <img src={item.cover_image} alt={item.product_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : <ShoppingBag style={{ width: 28, height: 28, color: '#cbd5e1' }} />
-                }
+                  ? <img src={item.cover_image} alt={item.product_name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                    />
+                  : null}
+                <ShoppingBag style={{ width: 28, height: 28, color: '#cbd5e1', display: item.cover_image ? 'none' : 'block' }} />
               </Link>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <Link to={`/urunler/${item.product_slug}`} style={{

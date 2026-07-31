@@ -231,8 +231,12 @@ export default function HomePage() {
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '' }}>
                     <div style={{ width: 100, height: 100, flexShrink: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                       {product.cover_image
-                        ? <img src={product.cover_image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <ShoppingBag style={{ width: 32, height: 32, color: '#e2e8f0' }} />}
+                        ? <img src={product.cover_image} alt={product.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                          />
+                        : null}
+                      <ShoppingBag style={{ width: 32, height: 32, color: '#e2e8f0', display: product.cover_image ? 'none' : 'block' }} />
                     </div>
                     <div style={{ padding: '14px 16px', flex: 1, position: 'relative' }}>
                       {discount > 0 && (
@@ -284,8 +288,12 @@ export default function HomePage() {
                   onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8edf2' }}>
                   <div style={{ aspectRatio: '1', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
                     {product.cover_image
-                      ? <img src={product.cover_image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
-                      : <ShoppingBag style={{ width: 44, height: 44, color: '#e2e8f0' }} />}
+                      ? <img src={product.cover_image} alt={product.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+                        />
+                      : null}
+                    <ShoppingBag style={{ width: 44, height: 44, color: '#e2e8f0', display: product.cover_image ? 'none' : 'block' }} />
                     {product.discounted_price && (
                       <span style={{ position: 'absolute', top: 10, left: 10, fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 8px', borderRadius: 6 }}>
                         İNDİRİM

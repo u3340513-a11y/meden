@@ -88,10 +88,11 @@ export default function ProductDetailPage() {
           }}>
             {product.images && product.images.length > 0 ? (
               <img src={product.images[selectedImage]?.url} alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <Package style={{ width: 72, height: 72, color: '#e2e8f0' }} />
-            )}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+              />
+            ) : null}
+            <Package style={{ width: 72, height: 72, color: '#e2e8f0', display: product.images && product.images.length > 0 ? 'none' : 'block' }} />
           </div>
           {product.images && product.images.length > 1 && (
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
@@ -102,7 +103,10 @@ export default function ProductDetailPage() {
                     border: i === selectedImage ? '2.5px solid #0F5EA8' : '1.5px solid #e2e8f0',
                     cursor: 'pointer', background: 'none', padding: 0, transition: 'border 0.15s',
                   }}>
-                  <img src={img.thumbnail || img.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={img.thumbnail || img.url} alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  />
                 </button>
               ))}
             </div>

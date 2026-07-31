@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductResource extends JsonResource
 {
@@ -51,6 +52,16 @@ class ProductResource extends JsonResource
         ];
     }
 
+    /**
+     * Resolves an image path to a full URL.
+     *
+     * Handles three cases:
+     * - null paths return null
+     * - Absolute URLs (http/https) are returned as-is (seed data)
+     * - Relative storage paths are resolved via Storage facade,
+     *   which uses APP_URL from config to build the correct URL
+     *   in both local and production environments.
+     */
     private static function resolveImageUrl(?string $path): ?string
     {
         if (!$path) {
@@ -61,6 +72,6 @@ class ProductResource extends JsonResource
             return $path;
         }
 
-        return "/storage/{$path}";
+        return Storage::disk('public')->url($path);
     }
 }
