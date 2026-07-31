@@ -20,7 +20,11 @@ class UserResource extends JsonResource
                 'id' => $this->city->id,
                 'name' => $this->city->name,
             ]),
-            'avatar' => $this->avatar ? url("/storage/{$this->avatar}") : null,
+            'avatar' => $this->avatar
+                ? (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')
+                    ? $this->avatar
+                    : "/storage/{$this->avatar}")
+                : null,
             'referral_code' => $this->referral_code,
             'email_verified' => $this->hasVerifiedEmail(),
             'created_at' => $this->created_at->toISOString(),

@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class ProductResource extends JsonResource
 {
@@ -53,14 +52,17 @@ class ProductResource extends JsonResource
     }
 
     /**
-     * Resolves an image path to a full URL.
+     * Resolves an image path to a URL.
      *
      * Handles three cases:
      * - null paths return null
      * - Absolute URLs (http/https) are returned as-is (seed data)
-     * - Relative storage paths are resolved via Storage facade,
-     *   which uses APP_URL from config to build the correct URL
-     *   in both local and production environments.
+     * - Relative storage paths are returned as root-relative "/storage/..."
+     *   URLs so the browser resolves them against the current origin.
+     *   This avoids depending on APP_URL, which on this project's
+     *   split deployment (frontend at "/", API mounted under "/api")
+     *   must NOT be used to build storage URLs (it would incorrectly
+     *   produce "/api/storage/..." which 404s).
      */
     private static function resolveImageUrl(?string $path): ?string
     {
@@ -72,6 +74,6 @@ class ProductResource extends JsonResource
             return $path;
         }
 
-        return Storage::disk('public')->url($path);
+        return '/storage/' . $path;
     }
 }

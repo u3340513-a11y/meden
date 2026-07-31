@@ -45,7 +45,7 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('avatars', 'public');
         auth()->user()->update(['avatar' => $path]);
 
-        return $this->success(['avatar' => asset("storage/{$path}")], 'Avatar güncellendi.');
+        return $this->success(['avatar' => "/storage/{$path}"], 'Avatar güncellendi.');
     }
 
     public function referral()
