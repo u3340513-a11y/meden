@@ -210,17 +210,16 @@ export default function MainLayout() {
           <div style={{ borderTop: '1px solid #f1f5f9', background: '#fff' }} className="hidden md:block">
             <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 2,
-                overflowX: 'auto', scrollbarWidth: 'none',
+                display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4,
                 padding: '6px 0',
               }}>
                 {/* Tüm Ürünler chip */}
                 <Link to="/urunler" style={{
-                  flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
-                  padding: '7px 14px', borderRadius: 999, fontSize: 12.5, fontWeight: 700,
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '6px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700,
                   color: '#0F5EA8', background: '#eff6ff',
                   textDecoration: 'none', whiteSpace: 'nowrap',
-                  border: '1.5px solid #dbeafe', transition: 'all 0.15s', marginRight: 4,
+                  border: '1.5px solid #dbeafe', transition: 'all 0.15s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#0F5EA8'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0F5EA8' }}
                   onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#0F5EA8'; e.currentTarget.style.borderColor = '#dbeafe' }}>
@@ -231,10 +230,10 @@ export default function MainLayout() {
                 <div style={{ width: 1, height: 20, background: '#e2e8f0', flexShrink: 0, margin: '0 4px' }} />
 
                 {categories.map((cat, idx) => (
-                  <div key={cat.id} className="group" style={{ position: 'relative', flexShrink: 0 }}>
+                  <div key={cat.id} className="group" style={{ position: 'relative' }}>
                     <Link to={`/urunler?category=${cat.id}`} style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 6,
-                      padding: '7px 14px', borderRadius: 999, fontSize: 12.5, fontWeight: 600,
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      padding: '6px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
                       color: '#334155', background: 'transparent',
                       textDecoration: 'none', whiteSpace: 'nowrap',
                       border: '1.5px solid transparent', transition: 'all 0.15s',
@@ -249,7 +248,7 @@ export default function MainLayout() {
                         e.currentTarget.style.color = '#334155'
                         e.currentTarget.style.borderColor = 'transparent'
                       }}>
-                      <span style={{ fontSize: 16, lineHeight: 1 }}>{getCatEmoji(cat, idx)}</span>
+                      <span style={{ fontSize: 15, lineHeight: 1 }}>{getCatEmoji(cat, idx)}</span>
                       {cat.name}
                       {(cat.children?.length ?? 0) > 0 && (
                         <ChevronDown style={{ width: 11, height: 11, color: '#94a3b8' }} />
