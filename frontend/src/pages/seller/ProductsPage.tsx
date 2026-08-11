@@ -12,8 +12,8 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
 
 const CONDITION_MAP: Record<string, string> = {
   new: '🆕 Sıfır',
-  like_new: '✨ Az Kullanılmış',
-  second_hand: '♻️ İkinci El',
+  lightly_used: '✨ Az Kullanılmış',
+  used: '♻️ İkinci El',
 }
 
 const TH: React.CSSProperties = {

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
@@ -19,6 +19,7 @@ const LABEL: React.CSSProperties = {
 export default function SellerAddProductPage() {
   const navigate = useNavigate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const [dragOver, setDragOver] = useState(false)
 
   const [form, setForm] = useState({
     name: '', description: '', category_id: '',
@@ -30,14 +31,28 @@ export default function SellerAddProductPage() {
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
+  // Sayfa herhangi bir yerine dosya bırakılırsa tarayıcının görseli açmasını engelle
+  useEffect(() => {
+    const prevent = (e: DragEvent) => { e.preventDefault() }
+    window.addEventListener('dragover', prevent)
+    window.addEventListener('drop', prevent)
+    return () => {
+      window.removeEventListener('dragover', prevent)
+      window.removeEventListener('drop', prevent)
+    }
+  }, [])
+
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => { const { data } = await api.get('/categories'); return data.data ?? data },
   })
 
-  const handleImages = (files: FileList | null) => {
+  const handleImages = (files: FileList | File[] | null) => {
     if (!files) return
-    const arr = Array.from(files).slice(0, 10 - images.length)
+    const arr = Array.from(files)
+      .filter(f => f.type.startsWith('image/'))
+      .slice(0, 10 - images.length)
+    if (arr.length === 0) return
     setImages(prev => [...prev, ...arr])
     setPreviews(prev => [...prev, ...arr.map(f => URL.createObjectURL(f))])
   }
@@ -197,13 +212,20 @@ export default function SellerAddProductPage() {
 
           {images.length < 10 && (
             <div onClick={() => fileRef.current?.click()}
+              onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragOver(true) }}
+              onDragEnter={e => { e.preventDefault(); e.stopPropagation(); setDragOver(true) }}
+              onDragLeave={e => { e.preventDefault(); e.stopPropagation(); setDragOver(false) }}
+              onDrop={e => {
+                e.preventDefault(); e.stopPropagation(); setDragOver(false)
+                handleImages(e.dataTransfer.files)
+              }}
               style={{
-                border: '2px dashed #e2e8f0', borderRadius: 14, padding: '28px 20px',
+                border: dragOver ? '2px dashed #0F5EA8' : '2px dashed #e2e8f0', borderRadius: 14, padding: '28px 20px',
                 textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
-                background: '#fafafa',
+                background: dragOver ? '#eff6ff' : '#fafafa',
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#0F5EA8'; e.currentTarget.style.background = '#eff6ff' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#fafafa' }}>
+              onMouseLeave={e => { if (!dragOver) { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#fafafa' } }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
                 {previews.length > 0 ? <ImageIcon style={{ width: 20, height: 20, color: '#0F5EA8' }} /> : <Upload style={{ width: 20, height: 20, color: '#0F5EA8' }} />}
               </div>

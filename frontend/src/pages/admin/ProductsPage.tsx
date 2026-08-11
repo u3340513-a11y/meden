@@ -12,8 +12,8 @@ const STATUS_OPTS = [
 
 const CONDITION_MAP: Record<string, string> = {
   new: '🆕 Sıfır',
-  like_new: '✨ Az Kullanılmış',
-  second_hand: '♻️ İkinci El',
+  lightly_used: '✨ Az Kullanılmış',
+  used: '♻️ İkinci El',
 }
 
 export default function AdminProductsPage() {
