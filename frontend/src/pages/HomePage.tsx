@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ShoppingBag, Shield, Truck, Users, ArrowRight, Star, ChevronRight, Heart, Sparkles, Tag, TrendingUp } from 'lucide-react'
+import {
+  ShoppingBag, Shield, Truck, Users, ArrowRight, Star,
+  ChevronRight, Heart, Sparkles, Tag, TrendingUp, Flame, Zap, Award, Clock
+} from 'lucide-react'
 import api from '@/lib/api'
-import type { Category, Product } from '@/types'
+import type { Product } from '@/types'
 
 const CATEGORY_ICONS: Record<string, string> = {
   'kadin': '👗', 'erkek': '👔', 'cocuk': '🧸', 'ev-yasam': '🏠',
@@ -10,29 +13,122 @@ const CATEGORY_ICONS: Record<string, string> = {
   'kitap-hobi': '📚', 'anne-bebek': '🍼',
 }
 
-const CATEGORY_GRADS: Record<string, string> = {
-  'kadin': 'linear-gradient(135deg,#f9a8d4,#ec4899)',
-  'erkek': 'linear-gradient(135deg,#93c5fd,#3b82f6)',
-  'cocuk': 'linear-gradient(135deg,#86efac,#22c55e)',
-  'ev-yasam': 'linear-gradient(135deg,#fde68a,#f59e0b)',
-  'elektronik': 'linear-gradient(135deg,#a5b4fc,#6366f1)',
-  'spor-outdoor': 'linear-gradient(135deg,#6ee7b7,#10b981)',
-  'kozmetik-kisisel-bakim': 'linear-gradient(135deg,#fca5a5,#ef4444)',
-  'kitap-hobi': 'linear-gradient(135deg,#fdba74,#f97316)',
-  'anne-bebek': 'linear-gradient(135deg,#d8b4fe,#a855f7)',
-}
-
-const features = [
+const FEATURES = [
   { icon: Shield, title: 'Güvenli Alışveriş', desc: 'Alıcı güvencesi, güvenli ödeme altyapısı', color: '#0F5EA8', bg: '#eff6ff' },
-  { icon: Truck, title: 'Hızlı Kargo', desc: 'Satıcı kargo seçer, takip kodu anında güncellenir', color: '#059669', bg: '#ecfdf5' },
+  { icon: Truck, title: 'Hızlı Kargo', desc: 'Satıcı kargo seçer, takip kodu aninda güncellenir', color: '#059669', bg: '#ecfdf5' },
   { icon: Users, title: 'Referans Sistemi', desc: 'Arkadaşını davet et, birlikte büyü', color: '#7c3aed', bg: '#f5f3ff' },
   { icon: ShoppingBag, title: 'Hem Al Hem Sat', desc: 'Tek hesapla alıcı ve satıcı olabilirsin', color: '#d97706', bg: '#fffbeb' },
 ]
 
+const CAMPAIGN_BANNERS = [
+  { emoji: '💻', title: 'Elektronik Fırsatları', subtitle: "%30'a varan indirim", color: '#0F5EA8', bg: 'linear-gradient(135deg,#0F5EA8,#1A7FD4)', link: '/urunler?category=elektronik' },
+  { emoji: '👗', title: 'Moda & Giyim', subtitle: 'Yeni sezon koleksiyonu', color: '#7c3aed', bg: 'linear-gradient(135deg,#7c3aed,#a855f7)', link: '/urunler?category=moda' },
+  { emoji: '🏠', title: 'Ev & Yaşam', subtitle: 'Evinizi güzelleştirin', color: '#059669', bg: 'linear-gradient(135deg,#059669,#10b981)', link: '/urunler?category=ev-yasam' },
+  { emoji: '💄', title: 'Kozmetik', subtitle: 'Doğal & helal ürünler', color: '#db2777', bg: 'linear-gradient(135deg,#db2777,#ec4899)', link: '/urunler?category=kozmetik' },
+]
+
+function ProductCard({ product, badge, badgeColor }: { product: Product; badge?: string; badgeColor?: string }) {
+  const discount = product.discounted_price ? Math.round((1 - product.current_price / product.price) * 100) : 0
+  const fmt = (n: number) => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺'
+
+  return (
+    <Link to={`/urunler/${product.slug}`} style={{ textDecoration: 'none' }}>
+      <div
+        style={{ borderRadius: 18, border: '1.5px solid #e8edf2', overflow: 'hidden', background: '#fff', transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLDivElement
+          el.style.transform = 'translateY(-6px)'
+          el.style.boxShadow = '0 16px 40px rgba(0,0,0,0.12)'
+          el.style.borderColor = '#0F5EA8'
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLDivElement
+          el.style.transform = ''
+          el.style.boxShadow = ''
+          el.style.borderColor = '#e8edf2'
+        }}>
+        <div style={{ aspectRatio: '1', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
+          {product.cover_image
+            ? <img src={product.cover_image} alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
+              />
+            : null}
+          <ShoppingBag style={{ width: 44, height: 44, color: '#e2e8f0', display: product.cover_image ? 'none' : 'block' }} />
+          {badge && (
+            <span style={{ position: 'absolute', top: 10, left: 10, fontSize: 10, fontWeight: 800, background: badgeColor ?? '#f97316', color: '#fff', padding: '3px 8px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+              {badge}
+            </span>
+          )}
+          {discount > 0 && (
+            <span style={{ position: 'absolute', bottom: 10, left: 10, fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 8px', borderRadius: 6 }}>
+              -{discount}%
+            </span>
+          )}
+          <button style={{
+            position: 'absolute', top: 10, right: 10,
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.92)', border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+            onClick={e => e.preventDefault()}>
+            <Heart style={{ width: 14, height: 14, color: '#94a3b8' }} />
+          </button>
+        </div>
+        <div style={{ padding: '14px 16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#0F5EA8', background: '#eff6ff', padding: '3px 8px', borderRadius: 999, display: 'inline-block', marginBottom: 8 }}>
+            {(product as any).condition_label || (product as any).condition}
+          </span>
+          <h3 style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', flex: 1 }}>
+            {product.name}
+          </h3>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 10 }}>
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#0F5EA8' }}>
+              {fmt(product.current_price)}
+            </span>
+            {product.discounted_price && (
+              <span style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'line-through' }}>
+                {fmt(product.price)}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function SectionHeader({
+  icon: Icon, iconBg, iconColor, title, subtitle, linkTo, linkColor, linkBg,
+}: {
+  icon: React.ElementType; iconBg: string; iconColor: string
+  title: string; subtitle: string; linkTo: string; linkColor: string; linkBg: string
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ width: 46, height: 46, borderRadius: 14, background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+          <Icon style={{ width: 22, height: 22, color: iconColor }} />
+        </div>
+        <div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#1a1a2e', letterSpacing: '-0.02em' }}>{title}</h2>
+          <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>{subtitle}</p>
+        </div>
+      </div>
+      <Link to={linkTo} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: linkColor, textDecoration: 'none', padding: '8px 16px', background: linkBg, borderRadius: 12, transition: 'all 0.15s' }}
+        onMouseEnter={e => { e.currentTarget.style.opacity = '0.8' }}
+        onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}>
+        Tümünü Gör <ChevronRight style={{ width: 14, height: 14 }} />
+      </Link>
+    </div>
+  )
+}
+
 export default function HomePage() {
-  const { data: categories } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => { const { data } = await api.get('/categories'); return (data.data as Category[]).filter((c: any) => !c.parent_id) },
+  const { data: popularProducts } = useQuery({
+    queryKey: ['products', 'popular'],
+    queryFn: async () => { const { data } = await api.get('/products?per_page=8&sort=popular'); return data.data.data as Product[] },
   })
 
   const { data: latestProducts } = useQuery({
@@ -42,14 +138,14 @@ export default function HomePage() {
 
   const { data: dealProducts } = useQuery({
     queryKey: ['products', 'deals'],
-    queryFn: async () => { const { data } = await api.get('/products?per_page=4&sort=price_asc'); return data.data.data as Product[] },
+    queryFn: async () => { const { data } = await api.get('/products?per_page=8&sort=price_asc'); return data.data.data as Product[] },
   })
 
   return (
     <div className="animate-fade-in">
 
       {/* ─── HERO ─── */}
-      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 580, display: 'flex', alignItems: 'center' }}>
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 560, display: 'flex', alignItems: 'center' }}>
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: `url('https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1600&q=80')`,
@@ -60,7 +156,6 @@ export default function HomePage() {
           position: 'absolute', inset: 0,
           background: 'linear-gradient(135deg, rgba(10,46,100,0.96) 0%, rgba(15,94,168,0.88) 55%, rgba(26,127,212,0.80) 100%)',
         }} />
-        {/* Decorative blobs */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, right: 60, width: 480, height: 480, background: 'rgba(226,185,59,0.12)', borderRadius: '50%', filter: 'blur(90px)' }} />
           <div style={{ position: 'absolute', bottom: -40, left: -40, width: 360, height: 360, background: 'rgba(255,255,255,0.04)', borderRadius: '50%', filter: 'blur(80px)' }} />
@@ -68,7 +163,6 @@ export default function HomePage() {
 
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1, width: '100%' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 60, alignItems: 'center' }}>
-            {/* Text side */}
             <div>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,
@@ -95,7 +189,7 @@ export default function HomePage() {
                   Ürünleri Keşfet <ArrowRight style={{ width: 17, height: 17 }} />
                 </Link>
                 <Link to="/kayit" className="btn btn-ghost" style={{ fontSize: 15 }}>
-                  Ücretsiz Kayıt Ol
+                  Ücretsize Kayıt Ol
                 </Link>
               </div>
 
@@ -109,7 +203,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Floating product preview card — son eklenen 3 ürün */}
+            {/* Floating product preview */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {(latestProducts || []).slice(0, 3).map((p, i) => {
                 const emoji = CATEGORY_ICONS[(p as any).category?.slug?.split('-')[0]] || '🛍️'
@@ -156,7 +250,7 @@ export default function HomePage() {
       {/* ─── FEATURES ─── */}
       <section style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16, marginTop: -36, position: 'relative', zIndex: 10 }}>
-          {features.map(({ icon: Icon, title, desc, color, bg }) => (
+          {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
             <div key={title} className="card card-hover" style={{ padding: 24, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
               <div style={{ width: 46, height: 46, borderRadius: 12, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Icon style={{ width: 22, height: 22, color }} />
@@ -170,173 +264,110 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── CATEGORIES ─── */}
-      {categories && categories.length > 0 && (
-        <section style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 20px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
-            <div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, color: '#1a1a2e' }}>Kategoriler</h2>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>İhtiyacınız olan her şey burada</p>
-            </div>
-            <Link to="/urunler" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: '#0F5EA8', textDecoration: 'none', padding: '8px 14px', background: '#eff6ff', borderRadius: 10 }}>
-              Tümünü Gör <ChevronRight style={{ width: 14, height: 14 }} />
-            </Link>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 14 }}>
-            {categories.map(cat => (
-              <Link key={cat.id} to={`/urunler?category=${cat.id}`} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  borderRadius: 18, overflow: 'hidden', cursor: 'pointer', height: '100%', boxSizing: 'border-box',
-                  background: CATEGORY_GRADS[cat.slug] || 'linear-gradient(135deg,#e2e8f0,#cbd5e1)',
-                  padding: '22px 16px', display: 'flex', alignItems: 'center', gap: 14,
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 28px rgba(0,0,0,0.15)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '' }}>
-                  <span style={{ fontSize: 32, flexShrink: 0, width: 44, textAlign: 'center' }}>{CATEGORY_ICONS[cat.slug] || '🛍️'}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', lineHeight: 1.35, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>
-                    {cat.name}
-                  </span>
+      {/* ─── KAMPANYA BANNERʼLARI ─── */}
+      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '64px 20px 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 16 }}>
+          {CAMPAIGN_BANNERS.map(banner => (
+            <Link key={banner.title} to={banner.link} style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: banner.bg, borderRadius: 20, padding: '28px 24px',
+                display: 'flex', alignItems: 'center', gap: 18,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.2)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)' }}>
+                <span style={{ fontSize: 36, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>{banner.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 4 }}>{banner.title}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>{banner.subtitle}</div>
                 </div>
-              </Link>
+                <ChevronRight style={{ width: 18, height: 18, color: 'rgba(255,255,255,0.7)', flexShrink: 0 }} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── ÇOK SATANLAR ─── */}
+      {popularProducts && popularProducts.length > 0 && (
+        <section style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 20px 0' }}>
+          <SectionHeader
+            icon={Flame} iconBg="#fff7ed" iconColor="#f97316"
+            title="Çok Satanlar" subtitle="En çok ilgi gören ürünler"
+            linkTo="/urunler?sort=popular" linkColor="#f97316" linkBg="#fff7ed"
+          />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
+            {popularProducts.map((product, idx) => (
+              <ProductCard key={product.id} product={product} badge={`🔥 #${idx + 1}`} badgeColor="#f97316" />
             ))}
           </div>
         </section>
       )}
 
-      {/* ─── DEALS / İNDİRİMLİ ─── */}
+      {/* ─── FıRSATLAR / İNDİRİMLİ ─── */}
       {dealProducts && dealProducts.filter(p => p.discounted_price).length > 0 && (
         <section style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 20px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: '#fff5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Tag style={{ width: 20, height: 20, color: '#ef4444' }} />
-              </div>
-              <div>
-                <h2 style={{ fontSize: 24, fontWeight: 900, color: '#1a1a2e' }}>Fırsatlar</h2>
-                <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>Sınırlı süre indirimli ürünler</p>
-              </div>
-            </div>
-            <Link to="/urunler" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: '#ef4444', textDecoration: 'none', padding: '8px 14px', background: '#fff5f5', borderRadius: 10 }}>
-              Tümünü Gör <ChevronRight style={{ width: 14, height: 14 }} />
-            </Link>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 18 }}>
-            {dealProducts.filter(p => p.discounted_price).slice(0, 4).map(product => {
-              const discount = Math.round((1 - product.current_price / product.price) * 100)
-              return (
-                <Link key={product.id} to={`/urunler/${product.slug}`} style={{ textDecoration: 'none' }}>
-                  <div className="card" style={{ overflow: 'hidden', padding: 0, transition: 'transform 0.2s, box-shadow 0.2s', display: 'flex' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 24px rgba(0,0,0,0.1)' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '' }}>
-                    <div style={{ width: 100, height: 100, flexShrink: 0, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                      {product.cover_image
-                        ? <img src={product.cover_image} alt={product.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
-                          />
-                        : null}
-                      <ShoppingBag style={{ width: 32, height: 32, color: '#e2e8f0', display: product.cover_image ? 'none' : 'block' }} />
-                    </div>
-                    <div style={{ padding: '14px 16px', flex: 1, position: 'relative' }}>
-                      {discount > 0 && (
-                        <span style={{ position: 'absolute', top: 12, right: 12, fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 7px', borderRadius: 6 }}>
-                          -{discount}%
-                        </span>
-                      )}
-                      <h3 style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', lineHeight: 1.4, marginBottom: 8, paddingRight: 40, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        {product.name}
-                      </h3>
-                      <div style={{ fontSize: 17, fontWeight: 900, color: '#ef4444' }}>
-                        {Number(product.current_price).toLocaleString('tr-TR')} ₺
-                      </div>
-                      <div style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'line-through' }}>
-                        {Number(product.price).toLocaleString('tr-TR')} ₺
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
+          <SectionHeader
+            icon={Tag} iconBg="#fff5f5" iconColor="#ef4444"
+            title="Fırsatlar" subtitle="Sınırlı süre indirimli ürünler"
+            linkTo="/urunler" linkColor="#ef4444" linkBg="#fff5f5"
+          />
+          {/* Big deal highlight */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
+            {dealProducts.filter(p => p.discounted_price).slice(0, 8).map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </section>
       )}
 
-      {/* ─── NEW ARRIVALS ─── */}
-      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 20px 80px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 12, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <TrendingUp style={{ width: 20, height: 20, color: '#0F5EA8' }} />
-            </div>
-            <div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, color: '#1a1a2e' }}>Yeni Eklenenler</h2>
-              <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>En güncel ürünleri keşfedin</p>
-            </div>
+      {/* ─── STAT BAR ─── */}
+      <section style={{ background: 'linear-gradient(135deg,#0F5EA8,#1A7FD4)', margin: '72px 0 0', padding: '48px 20px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 32 }}>
+            {[
+              { icon: Award, val: '500+', lbl: 'Güvenilir Satıcı', desc: 'Doğrulanmış satıcılar' },
+              { icon: ShoppingBag, val: '10K+', lbl: 'Aktif İlan', desc: 'Her kategoride ürün' },
+              { icon: Zap, val: '%100', lbl: 'Güvenli Ödeme', desc: 'Alıcı güvencesi' },
+              { icon: Clock, val: '7/24', lbl: 'Destek', desc: 'Her zaman yanınızdayız' },
+            ].map(({ icon: Icon, val, lbl, desc }) => (
+              <div key={lbl} style={{ textAlign: 'center' }}>
+                <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <Icon style={{ width: 24, height: 24, color: '#fff' }} />
+                </div>
+                <div style={{ fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{val}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginTop: 4 }}>{lbl}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>{desc}</div>
+              </div>
+            ))}
           </div>
-          <Link to="/urunler?sort=newest" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 700, color: '#0F5EA8', textDecoration: 'none', padding: '8px 14px', background: '#eff6ff', borderRadius: 10 }}>
-            Tümünü Gör <ChevronRight style={{ width: 14, height: 14 }} />
-          </Link>
         </div>
+      </section>
+
+      {/* ─── YENİ EKLENENLER ─── */}
+      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '72px 20px 80px' }}>
+        <SectionHeader
+          icon={TrendingUp} iconBg="#eff6ff" iconColor="#0F5EA8"
+          title="Yeni Eklenenler" subtitle="En güncel ürünleri keşfedin"
+          linkTo="/urunler?sort=newest" linkColor="#0F5EA8" linkBg="#eff6ff"
+        />
 
         {latestProducts && latestProducts.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
             {latestProducts.map(product => (
-              <Link key={product.id} to={`/urunler/${product.slug}`} style={{ textDecoration: 'none' }}>
-                <div style={{ borderRadius: 18, border: '1.5px solid #e8edf2', overflow: 'hidden', background: '#fff', transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-5px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 14px 32px rgba(0,0,0,0.1)'; (e.currentTarget as HTMLDivElement).style.borderColor = '#0F5EA8' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; (e.currentTarget as HTMLDivElement).style.borderColor = '#e8edf2' }}>
-                  <div style={{ aspectRatio: '1', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
-                    {product.cover_image
-                      ? <img src={product.cover_image} alt={product.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.style.removeProperty('display') }}
-                        />
-                      : null}
-                    <ShoppingBag style={{ width: 44, height: 44, color: '#e2e8f0', display: product.cover_image ? 'none' : 'block' }} />
-                    {product.discounted_price && (
-                      <span style={{ position: 'absolute', top: 10, left: 10, fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 8px', borderRadius: 6 }}>
-                        İNDİRİM
-                      </span>
-                    )}
-                    <button style={{
-                      position: 'absolute', top: 10, right: 10,
-                      width: 32, height: 32, borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    }}
-                      onClick={e => e.preventDefault()}>
-                      <Heart style={{ width: 14, height: 14, color: '#94a3b8' }} />
-                    </button>
-                  </div>
-                  <div style={{ padding: '14px 16px' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#0F5EA8', background: '#eff6ff', padding: '3px 8px', borderRadius: 999 }}>
-                      {(product as any).condition_label || (product as any).condition}
-                    </span>
-                    <h3 style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', marginTop: 8, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                      {product.name}
-                    </h3>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
-                      <span style={{ fontSize: 18, fontWeight: 900, color: '#0F5EA8' }}>
-                        {Number(product.current_price).toLocaleString('tr-TR')} ₺
-                      </span>
-                      {product.discounted_price && (
-                        <span style={{ fontSize: 12, color: '#94a3b8', textDecoration: 'line-through' }}>
-                          {Number(product.price).toLocaleString('tr-TR')} ₺
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
           <div style={{ background: 'linear-gradient(135deg,#eff6ff,#f0fdf4)', border: '1px solid #dbeafe', borderRadius: 20, padding: '56px 32px', textAlign: 'center' }}>
             <ShoppingBag style={{ width: 40, height: 40, color: '#0F5EA8', margin: '0 auto 16px' }} />
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', marginBottom: 8 }}>İlk ilanı sen ekle!</h3>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24 }}>Satıcı panelinden hemen ilan verebilirsin.</p>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', marginBottom: 8 }}>
+              İlk ilanı sen ekle!
+            </h3>
+            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24 }}>
+              Satıcı panelinden hemen ilan verebilirsin.
+            </p>
             <Link to="/satis/urunlerim" className="btn btn-primary">
               İlan Ver <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
@@ -348,17 +379,23 @@ export default function HomePage() {
       <section style={{ background: 'linear-gradient(135deg,#f8fafc,#eff6ff)', padding: '64px 20px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1a1a2e' }}>Neden Medeniyet Pazarı?</h2>
-            <p style={{ fontSize: 15, color: '#64748b', marginTop: 8 }}>Güven, kalite ve topluluk odaklı alışveriş deneyimi</p>
+            <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1a1a2e' }}>
+              Neden Medeniyet Pazarı?
+            </h2>
+            <p style={{ fontSize: 15, color: '#64748b', marginTop: 8 }}>
+              Güven, kalite ve topluluk odaklı alışveriş deneyimi
+            </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 24 }}>
             {[
-              { icon: '🛡️', title: 'Alıcı Güvencesi', desc: 'Sorun yaşarsanız geri ödeme garantisi. Satıcı değerlendirme sistemi ile güvenli alışveriş.' },
+              { icon: '🛡️', title: 'Alıcı Güvencesi', desc: 'Sorun yaşarsınız geri ödeme garantisi. Satıcı değerlendirme sistemi ile güvenli alışveriş.' },
               { icon: '🤝', title: 'Güvenilir Satıcılar', desc: 'Her satıcı kimlik doğrulamasından geçer. Ürünler admin onayından sonra yayımlanır.' },
               { icon: '💎', title: 'Kaliteli Ürünler', desc: 'Yeni ve az kullanılmış, incelenmiş ve onaylanmış ürünler. Sürpriz yok.' },
               { icon: '🌐', title: 'İslami Değerler', desc: 'Helal hassasiyetli, İslami değerlere uygun bir pazar yeri anlayışı.' },
             ].map(item => (
-              <div key={item.title} style={{ background: '#fff', borderRadius: 18, padding: 28, border: '1.5px solid #e8edf2', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+              <div key={item.title} style={{ background: '#fff', borderRadius: 18, padding: 28, border: '1.5px solid #e8edf2', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.04)' }}>
                 <div style={{ fontSize: 36, marginBottom: 14 }}>{item.icon}</div>
                 <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>{item.title}</h3>
                 <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.7 }}>{item.desc}</p>
@@ -377,11 +414,11 @@ export default function HomePage() {
           </h2>
           <p style={{ fontSize: 15, color: 'rgba(26,26,46,0.65)', marginBottom: 32, lineHeight: 1.7 }}>
             Referans linkinle arkadaşlarını davet et, birlikte büyü.<br />
-            Kayıt tamamen ücretsiz ve anında aktif.
+            Kayıt tamamen ücretsiz ve aninda aktif.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/kayit" className="btn" style={{ background: '#1a1a2e', color: '#E2B93B', fontSize: 15 }}>
-              Ücretsiz Hesap Aç <ArrowRight style={{ width: 17, height: 17 }} />
+              Ücresiz Hesap Aç <ArrowRight style={{ width: 17, height: 17 }} />
             </Link>
             <Link to="/urunler" className="btn" style={{ background: 'rgba(255,255,255,0.3)', color: '#1a1a2e', fontSize: 15, backdropFilter: 'blur(8px)' }}>
               Ürünleri İncele

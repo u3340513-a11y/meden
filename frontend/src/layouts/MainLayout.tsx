@@ -1,8 +1,29 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown } from 'lucide-react'
+import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown, LayoutGrid } from 'lucide-react'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import { useCartStore } from '@/stores/cartStore'
+import type { Category } from '@/types'
+
+const SLUG_EMOJI: Record<string, string> = {
+  'elektronik': '💻', 'moda': '👗', 'kadin': '👗', 'erkek': '👔', 'cocuk': '🧸',
+  'ev-yasam': '🏠', 'anne-bebek': '🍼', 'spor-outdoor': '⚽',
+  'kozmetik-kisisel-bakim': '💄', 'kitap-kirtasiye': '📖', 'kitap-hobi': '📚',
+  'oyuncak-hobi': '🎮', 'otomotiv-aksesuar': '🚗', 'supermarket': '🛒',
+}
+const FALLBACK_EMOJIS = ['🎁', '🌟', '✨', '🎯', '💎', '🔑', '🎪', '🏷']
+
+function getCatEmoji(cat: Category, idx: number): string {
+  const slug = (cat as any).slug as string | undefined
+  if (slug && SLUG_EMOJI[slug]) return SLUG_EMOJI[slug]
+  if (slug) {
+    const entry = Object.entries(SLUG_EMOJI).find(([k]) => slug.includes(k) || k.includes(slug))
+    if (entry) return entry[1]
+  }
+  return FALLBACK_EMOJIS[idx % FALLBACK_EMOJIS.length]
+}
 
 export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -11,6 +32,15 @@ export default function MainLayout() {
   const cartItems = useCartStore((s) => s.items)
   const navigate = useNavigate()
 
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data } = await api.get('/categories')
+      return (data.data ?? data) as Category[]
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) navigate(`/urunler?search=${encodeURIComponent(searchQuery)}`)
@@ -18,7 +48,6 @@ export default function MainLayout() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* HEADER */}
       <header style={{
         position: 'sticky', top: 0, zIndex: 50,
         background: '#fff',
@@ -28,13 +57,11 @@ export default function MainLayout() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', height: 68, gap: 16 }}>
 
-            {/* Logo */}
             <Link to="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
               <img src="/logo.jpeg" alt="Medeniyet Pazarı"
                 style={{ height: 44, width: 'auto', borderRadius: 8, objectFit: 'contain' }} />
             </Link>
 
-            {/* Search — desktop */}
             <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: 520, display: 'flex' }}
               className="hidden md:flex">
               <div style={{ position: 'relative', width: '100%' }}>
@@ -53,7 +80,6 @@ export default function MainLayout() {
               </div>
             </form>
 
-            {/* Nav */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
               <Link to="/favorilerim" style={{
                 padding: '8px', borderRadius: 10, color: '#64748b', display: 'flex',
@@ -101,7 +127,6 @@ export default function MainLayout() {
                     </span>
                     <ChevronDown style={{ width: 13, height: 13, color: '#94a3b8' }} className="hidden lg:block" />
                   </button>
-                  {/* Dropdown */}
                   <div style={{
                     position: 'absolute', right: 0, top: '100%', marginTop: 6,
                     width: 220, background: '#fff',
@@ -180,6 +205,87 @@ export default function MainLayout() {
           </div>
         </div>
 
+        {/* ─── CATEGORY BAR — Trendyol style (desktop) ─── */}
+        {categories && categories.length > 0 && (
+          <div style={{ borderTop: '1px solid #f1f5f9', background: '#fff' }} className="hidden md:block">
+            <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 2,
+                overflowX: 'auto', scrollbarWidth: 'none',
+                padding: '6px 0',
+              }}>
+                {/* Tüm Ürünler chip */}
+                <Link to="/urunler" style={{
+                  flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '7px 14px', borderRadius: 999, fontSize: 12.5, fontWeight: 700,
+                  color: '#0F5EA8', background: '#eff6ff',
+                  textDecoration: 'none', whiteSpace: 'nowrap',
+                  border: '1.5px solid #dbeafe', transition: 'all 0.15s', marginRight: 4,
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#0F5EA8'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0F5EA8' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#0F5EA8'; e.currentTarget.style.borderColor = '#dbeafe' }}>
+                  <LayoutGrid style={{ width: 13, height: 13 }} />
+                  Tüm Ürünler
+                </Link>
+
+                <div style={{ width: 1, height: 20, background: '#e2e8f0', flexShrink: 0, margin: '0 4px' }} />
+
+                {categories.map((cat, idx) => (
+                  <div key={cat.id} className="group" style={{ position: 'relative', flexShrink: 0 }}>
+                    <Link to={`/urunler?category=${cat.id}`} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '7px 14px', borderRadius: 999, fontSize: 12.5, fontWeight: 600,
+                      color: '#334155', background: 'transparent',
+                      textDecoration: 'none', whiteSpace: 'nowrap',
+                      border: '1.5px solid transparent', transition: 'all 0.15s',
+                    }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#f8fafc'
+                        e.currentTarget.style.color = '#0F5EA8'
+                        e.currentTarget.style.borderColor = '#dbeafe'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'transparent'
+                        e.currentTarget.style.color = '#334155'
+                        e.currentTarget.style.borderColor = 'transparent'
+                      }}>
+                      <span style={{ fontSize: 16, lineHeight: 1 }}>{getCatEmoji(cat, idx)}</span>
+                      {cat.name}
+                      {(cat.children?.length ?? 0) > 0 && (
+                        <ChevronDown style={{ width: 11, height: 11, color: '#94a3b8' }} />
+                      )}
+                    </Link>
+
+                    {(cat.children?.length ?? 0) > 0 && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, paddingTop: 4, zIndex: 60,
+                      }} className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                        <div style={{
+                          minWidth: 200, background: '#fff', borderRadius: 14,
+                          border: '1px solid #e2e8f0', boxShadow: '0 16px 40px rgba(0,0,0,0.12)',
+                          padding: '6px 0',
+                        }}>
+                          {cat.children!.map(sub => (
+                            <Link key={sub.id} to={`/urunler?category=${sub.id}`} style={{
+                              display: 'block', padding: '9px 16px',
+                              fontSize: 13, color: '#334155', textDecoration: 'none',
+                              transition: 'background 0.12s',
+                            }}
+                              onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8' }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155' }}>
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Mobile menu */}
         {mobileOpen && (
           <div style={{ borderTop: '1px solid #e2e8f0', padding: 16, background: '#fff' }}
@@ -191,6 +297,27 @@ export default function MainLayout() {
                   placeholder="Ara..." className="field" style={{ paddingLeft: 38 }} />
               </div>
             </form>
+            {categories && categories.length > 0 && (
+              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginTop: 14, paddingBottom: 4, scrollbarWidth: 'none' }}>
+                <Link to="/urunler" onClick={() => setMobileOpen(false)} style={{
+                  flexShrink: 0, padding: '7px 14px', fontSize: 12, fontWeight: 700,
+                  color: '#0F5EA8', background: '#eff6ff', borderRadius: 999, textDecoration: 'none',
+                }}>
+                  Tüm Ürünler
+                </Link>
+                {categories.map((cat, idx) => (
+                  <Link key={cat.id} to={`/urunler?category=${cat.id}`} onClick={() => setMobileOpen(false)} style={{
+                    flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '7px 14px', fontSize: 12, fontWeight: 600,
+                    color: '#334155', background: '#f8fafc', borderRadius: 999, textDecoration: 'none',
+                    whiteSpace: 'nowrap', border: '1px solid #e2e8f0',
+                  }}>
+                    <span>{getCatEmoji(cat, idx)}</span>
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </header>
