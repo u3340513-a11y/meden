@@ -1,17 +1,51 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useCallback } from 'react'
 import {
   ShoppingBag, Shield, Truck, Users, ArrowRight, Star,
-  ChevronRight, Heart, Sparkles, Tag, TrendingUp, Flame, Zap, Award, Clock
+  ChevronRight, Heart, Sparkles, Tag, TrendingUp, Flame, Zap, Award, Clock, ChevronLeft
 } from 'lucide-react'
 import api from '@/lib/api'
 import type { Product } from '@/types'
 
-const CATEGORY_ICONS: Record<string, string> = {
-  'kadin': '👗', 'erkek': '👔', 'cocuk': '🧸', 'ev-yasam': '🏠',
-  'elektronik': '💻', 'spor-outdoor': '⚽', 'kozmetik-kisisel-bakim': '💄',
-  'kitap-hobi': '📚', 'anne-bebek': '🍼',
-}
+const HERO_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=80',
+    title: 'Güvenli alışverişin',
+    highlight: 'yeni adresi.',
+    desc: 'Binlerce ürün, güvenilir satıcılar ve referans sistemi ile büyüyen bir topluluk.',
+    accent: '#E2B93B',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80',
+    title: 'En kaliteli ürünler',
+    highlight: 'tek adreste.',
+    desc: 'Moda, teknoloji, ev, kozmetik ve daha fazlası — hepsi onaylı satıcılardan.',
+    accent: '#10b981',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80',
+    title: 'Hızlı kargo,',
+    highlight: 'güvenli ödeme.',
+    desc: 'Alıcı güvencesi ve entegre kargo takibi ile tamamen güvenli alışveriş.',
+    accent: '#a855f7',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600&q=80',
+    title: 'Satışa başlaman',
+    highlight: 'çok kolay.',
+    desc: 'Birkaç dakikada hesap aç, ürünlerini listele, satışa başla.',
+    accent: '#f97316',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=1600&q=80',
+    title: 'Referans sistemi ile',
+    highlight: 'birlikte büyü.',
+    desc: 'Arkadaşlarını davet et, avantajlı alışveriş yap, topluluğumuzu büyüt.',
+    accent: '#E2B93B',
+  },
+]
+
 
 const FEATURES = [
   { icon: Shield, title: 'Güvenli Alışveriş', desc: 'Alıcı güvencesi, güvenli ödeme altyapısı', color: '#0F5EA8', bg: '#eff6ff' },
@@ -126,6 +160,16 @@ function SectionHeader({
 }
 
 export default function HomePage() {
+  const [slideIdx, setSlideIdx] = useState(0)
+
+  const nextSlide = useCallback(() => setSlideIdx(i => (i + 1) % HERO_SLIDES.length), [])
+  const prevSlide = useCallback(() => setSlideIdx(i => (i - 1 + HERO_SLIDES.length) % HERO_SLIDES.length), [])
+
+  useEffect(() => {
+    const t = setInterval(nextSlide, 5000)
+    return () => clearInterval(t)
+  }, [nextSlide])
+
   const { data: popularProducts } = useQuery({
     queryKey: ['products', 'popular'],
     queryFn: async () => { const { data } = await api.get('/products?per_page=8&sort=popular'); return data.data.data as Product[] },
@@ -144,106 +188,124 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
 
-      {/* ─── HERO ─── */}
-      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 560, display: 'flex', alignItems: 'center' }}>
+      {/* ─── HERO SLIDER ─── */}
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 560 }}>
+        {/* Slide backgrounds */}
+        {HERO_SLIDES.map((slide, i) => (
+          <div key={i} style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url('${slide.image}')`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            opacity: slideIdx === i ? 1 : 0,
+            transition: 'opacity 0.9s cubic-bezier(0.4,0,0.2,1)',
+            filter: 'brightness(0.28)',
+          }} />
+        ))}
+
+        {/* Gradient overlay */}
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: `url('https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=1600&q=80')`,
-          backgroundSize: 'cover', backgroundPosition: 'center',
-          filter: 'brightness(0.3)',
+          background: 'linear-gradient(135deg, rgba(10,30,80,0.96) 0%, rgba(15,65,140,0.85) 55%, rgba(20,100,180,0.75) 100%)',
+          pointerEvents: 'none',
         }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(135deg, rgba(10,46,100,0.96) 0%, rgba(15,94,168,0.88) 55%, rgba(26,127,212,0.80) 100%)',
-        }} />
+
+        {/* Ambient blobs */}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -80, right: 60, width: 480, height: 480, background: 'rgba(226,185,59,0.12)', borderRadius: '50%', filter: 'blur(90px)' }} />
-          <div style={{ position: 'absolute', bottom: -40, left: -40, width: 360, height: 360, background: 'rgba(255,255,255,0.04)', borderRadius: '50%', filter: 'blur(80px)' }} />
+          <div style={{ position: 'absolute', top: -80, right: 60, width: 480, height: 480, background: `${HERO_SLIDES[slideIdx].accent}22`, borderRadius: '50%', filter: 'blur(90px)', transition: 'background 1s' }} />
+          <div style={{ position: 'absolute', bottom: -40, left: -40, width: 360, height: 360, background: 'rgba(255,255,255,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
         </div>
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '80px 20px', position: 'relative', zIndex: 1, width: '100%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 60, alignItems: 'center' }}>
-            <div>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 7,
-                padding: '6px 16px', background: 'rgba(226,185,59,0.15)',
-                border: '1px solid rgba(226,185,59,0.3)',
-                borderRadius: 999, fontSize: 12, fontWeight: 700, color: '#E2B93B',
-                marginBottom: 28, backdropFilter: 'blur(8px)',
+        {/* Content */}
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '88px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', minHeight: 560 }}>
+          <div style={{ maxWidth: 700 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 7,
+              padding: '6px 16px', background: 'rgba(226,185,59,0.15)',
+              border: '1px solid rgba(226,185,59,0.3)',
+              borderRadius: 999, fontSize: 12, fontWeight: 700, color: '#E2B93B',
+              marginBottom: 28, backdropFilter: 'blur(8px)',
+            }}>
+              <Sparkles style={{ width: 13, height: 13 }} />
+              Yeni nesil İslami pazar yeri
+            </span>
+
+            {HERO_SLIDES.map((slide, i) => (
+              <div key={i} style={{
+                opacity: slideIdx === i ? 1 : 0,
+                transform: slideIdx === i ? 'translateY(0)' : 'translateY(12px)',
+                transition: 'opacity 0.7s ease, transform 0.7s ease',
+                position: slideIdx === i ? 'relative' : 'absolute',
+                pointerEvents: slideIdx === i ? 'auto' : 'none',
               }}>
-                <Sparkles style={{ width: 13, height: 13 }} />
-                Yeni nesil İslami pazar yeri
-              </span>
-
-              <h1 style={{ fontSize: 'clamp(2.2rem,4.5vw,3.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 22, letterSpacing: '-0.03em' }}>
-                Güvenli alışverişin<br />
-                <span style={{ color: '#E2B93B' }}>yeni adresi.</span>
-              </h1>
-
-              <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', marginBottom: 40, lineHeight: 1.7, maxWidth: 500 }}>
-                Binlerce ürün, güvenilir satıcılar ve referans sistemi ile büyüyen bir topluluk. Hemen katılın.
-              </p>
-
-              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
-                <Link to="/urunler" className="btn btn-accent" style={{ fontSize: 15 }}>
-                  Ürünleri Keşfet <ArrowRight style={{ width: 17, height: 17 }} />
-                </Link>
-                <Link to="/kayit" className="btn btn-ghost" style={{ fontSize: 15 }}>
-                  Ücretsize Kayıt Ol
-                </Link>
+                <h1 style={{ fontSize: 'clamp(2.2rem,4.5vw,3.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 22, letterSpacing: '-0.03em' }}>
+                  {slide.title}<br />
+                  <span style={{ color: slide.accent, transition: 'color 0.6s' }}>{slide.highlight}</span>
+                </h1>
+                <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.72)', marginBottom: 40, lineHeight: 1.7, maxWidth: 520 }}>
+                  {slide.desc}
+                </p>
               </div>
+            ))}
 
-              <div style={{ display: 'flex', gap: 36 }}>
-                {[['12+', 'Ürün'], ['100%', 'Güvenli'], ['7/24', 'Destek']].map(([val, lbl]) => (
-                  <div key={lbl}>
-                    <div style={{ fontSize: 26, fontWeight: 900, color: '#E2B93B' }}>{val}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 3, fontWeight: 600 }}>{lbl}</div>
-                  </div>
-                ))}
-              </div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 56 }}>
+              <Link to="/urunler" className="btn btn-accent" style={{ fontSize: 15 }}>
+                Ürünleri Keşfet <ArrowRight style={{ width: 17, height: 17 }} />
+              </Link>
+              <Link to="/kayit" className="btn btn-ghost" style={{ fontSize: 15 }}>
+                Ücretsize Kayıt Ol
+              </Link>
             </div>
 
-            {/* Floating product preview */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {(latestProducts || []).slice(0, 3).map((p, i) => {
-                const emoji = CATEGORY_ICONS[(p as any).category?.slug?.split('-')[0]] || '🛍️'
-                const discount = p.discounted_price ? Math.round((1 - p.current_price / p.price) * 100) : 0
-                const fmt = (n: number) => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺'
-                return (
-                  <Link key={p.id} to={`/urunler/${p.slug}`} style={{ textDecoration: 'none' }}>
-                    <div style={{
-                      background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 16, padding: '14px 18px',
-                      display: 'flex', alignItems: 'center', gap: 14,
-                      transform: `translateX(${i * 8}px)`,
-                      transition: 'transform 0.2s, background 0.2s',
-                    }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.12)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)' }}>
-                      <span style={{ fontSize: 28, flexShrink: 0 }}>{emoji}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {p.name}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                          <span style={{ fontSize: 15, fontWeight: 800, color: '#E2B93B' }}>{fmt(p.current_price)}</span>
-                          {p.discounted_price && (
-                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textDecoration: 'line-through' }}>{fmt(p.price)}</span>
-                          )}
-                        </div>
-                      </div>
-                      {discount > 0 && (
-                        <span style={{ fontSize: 10, fontWeight: 800, background: '#ef4444', color: '#fff', padding: '3px 7px', borderRadius: 6, flexShrink: 0 }}>
-                          -{discount}%
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                )
-              })}
+            <div style={{ display: 'flex', gap: 36, marginBottom: 40 }}>
+              {[['12+', 'Ürün'], ['100%', 'Güvenli'], ['7/24', 'Destek']].map(([val, lbl]) => (
+                <div key={lbl}>
+                  <div style={{ fontSize: 26, fontWeight: 900, color: '#E2B93B' }}>{val}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 3, fontWeight: 600 }}>{lbl}</div>
+                </div>
+              ))}
             </div>
           </div>
+        </div>
+
+        {/* Prev / Next arrows */}
+        <button onClick={prevSlide} aria-label="Geri" style={{
+          position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', zIndex: 10,
+          width: 44, height: 44, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          backdropFilter: 'blur(8px)', cursor: 'pointer', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}>
+          <ChevronLeft style={{ width: 20, height: 20 }} />
+        </button>
+        <button onClick={nextSlide} aria-label="İleri" style={{
+          position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', zIndex: 10,
+          width: 44, height: 44, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          backdropFilter: 'blur(8px)', cursor: 'pointer', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'background 0.2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.22)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}>
+          <ChevronRight style={{ width: 20, height: 20 }} />
+        </button>
+
+        {/* Dot indicators */}
+        <div style={{
+          position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: 8, zIndex: 10,
+        }}>
+          {HERO_SLIDES.map((_, i) => (
+            <button key={i} onClick={() => setSlideIdx(i)} aria-label={`Slayt ${i + 1}`} style={{
+              width: slideIdx === i ? 28 : 8, height: 8, borderRadius: 999,
+              background: slideIdx === i ? '#E2B93B' : 'rgba(255,255,255,0.4)',
+              border: 'none', cursor: 'pointer', padding: 0,
+              transition: 'width 0.35s ease, background 0.35s ease',
+            }} />
+          ))}
         </div>
       </section>
 
