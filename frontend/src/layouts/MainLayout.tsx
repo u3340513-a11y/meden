@@ -205,106 +205,105 @@ export default function MainLayout() {
           </div>
         </div>
 
-        {/* ─── CATEGORY BAR — single-row, overflow hidden, +More dropdown ─── */}
+        {/* ─── CATEGORY BAR — single-row, Tüm Kategoriler dropdown first ─── */}
         {categories && categories.length > 0 && (
           <div style={{ borderTop: '1px solid #f1f5f9', background: '#fff' }} className="hidden md:block">
             <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '5px 0', overflow: 'hidden', height: 40 }}>
+              {(() => {
+                const filtered = categories.filter(c => !c.name.toLowerCase().includes('süper'))
+                const visible = filtered.slice(0, 7)
+                const overflow = filtered.slice(7)
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '5px 0', overflow: 'hidden', height: 40 }}>
 
-                {/* Tüm Ürünler */}
-                <Link to="/urunler" style={{
-                  flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5,
-                  padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700,
-                  color: '#0F5EA8', background: '#eff6ff',
-                  textDecoration: 'none', whiteSpace: 'nowrap',
-                  border: '1.5px solid #dbeafe', transition: 'all 0.15s',
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#0F5EA8'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0F5EA8' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.color = '#0F5EA8'; e.currentTarget.style.borderColor = '#dbeafe' }}>
-                  <LayoutGrid style={{ width: 13, height: 13 }} />
-                  Tüm Ürünler
-                </Link>
+                    {/* Tüm Kategoriler — always first */}
+                    <div className="group" style={{ position: 'relative', flexShrink: 0 }}>
+                      <button style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
+                        padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700,
+                        color: '#0F5EA8', background: '#eff6ff',
+                        border: '1.5px solid #dbeafe', cursor: 'pointer', whiteSpace: 'nowrap',
+                        transition: 'all 0.15s',
+                      }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#0F5EA8'; (e.currentTarget as HTMLButtonElement).style.color = '#fff'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#0F5EA8' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#eff6ff'; (e.currentTarget as HTMLButtonElement).style.color = '#0F5EA8'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#dbeafe' }}>
+                        <LayoutGrid style={{ width: 13, height: 13 }} />
+                        Tüm Kategoriler
+                        <ChevronDown style={{ width: 11, height: 11 }} />
+                      </button>
 
-                <div style={{ width: 1, height: 20, background: '#e2e8f0', flexShrink: 0, margin: '0 6px' }} />
-
-                {/* Visible categories — first 7 */}
-                {categories.slice(0, 7).map((cat, idx) => (
-                  <div key={cat.id} className="group" style={{ position: 'relative', flexShrink: 0 }}>
-                    <Link to={`/urunler?category=${cat.id}`} style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
-                      padding: '5px 11px', borderRadius: 999, fontSize: 12, fontWeight: 600,
-                      color: '#334155', background: 'transparent',
-                      textDecoration: 'none', whiteSpace: 'nowrap',
-                      border: '1.5px solid transparent', transition: 'all 0.15s',
-                    }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8'; e.currentTarget.style.borderColor = '#dbeafe' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; e.currentTarget.style.borderColor = 'transparent' }}>
-                      <span style={{ fontSize: 14, lineHeight: 1 }}>{getCatEmoji(cat, idx)}</span>
-                      {cat.name}
-                    </Link>
-
-                    {(cat.children?.length ?? 0) > 0 && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, paddingTop: 4, zIndex: 60 }}
                         className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
-                        <div style={{ minWidth: 200, background: '#fff', borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 16px 40px rgba(0,0,0,0.12)', padding: '6px 0' }}>
-                          {cat.children!.map(sub => (
-                            <Link key={sub.id} to={`/urunler?category=${sub.id}`} style={{ display: 'block', padding: '9px 16px', fontSize: 13, color: '#334155', textDecoration: 'none', transition: 'background 0.12s' }}
+                        <div style={{
+                          background: '#fff', borderRadius: 16, border: '1px solid #e2e8f0',
+                          boxShadow: '0 16px 48px rgba(0,0,0,0.14)',
+                          padding: '10px 0', minWidth: 260,
+                          display: 'grid', gridTemplateColumns: '1fr 1fr',
+                        }}>
+                          {filtered.map((cat, idx) => (
+                            <Link key={cat.id} to={`/urunler?category=${cat.id}`} style={{
+                              display: 'flex', alignItems: 'center', gap: 8,
+                              padding: '9px 16px', fontSize: 12.5, color: '#334155',
+                              textDecoration: 'none', transition: 'background 0.12s',
+                            }}
                               onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8' }}
                               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155' }}>
-                              {sub.name}
+                              <span style={{ fontSize: 15 }}>{getCatEmoji(cat, idx)}</span>
+                              {cat.name}
                             </Link>
                           ))}
                         </div>
                       </div>
+                    </div>
+
+                    <div style={{ width: 1, height: 20, background: '#e2e8f0', flexShrink: 0, margin: '0 6px' }} />
+
+                    {/* First 7 visible categories (no Süpermarket) */}
+                    {visible.map((cat, idx) => (
+                      <div key={cat.id} className="group" style={{ position: 'relative', flexShrink: 0 }}>
+                        <Link to={`/urunler?category=${cat.id}`} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 5,
+                          padding: '5px 11px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+                          color: '#334155', background: 'transparent',
+                          textDecoration: 'none', whiteSpace: 'nowrap',
+                          border: '1.5px solid transparent', transition: 'all 0.15s',
+                        }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8'; e.currentTarget.style.borderColor = '#dbeafe' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; e.currentTarget.style.borderColor = 'transparent' }}>
+                          <span style={{ fontSize: 14, lineHeight: 1 }}>{getCatEmoji(cat, idx)}</span>
+                          {cat.name}
+                        </Link>
+
+                        {(cat.children?.length ?? 0) > 0 && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, paddingTop: 4, zIndex: 60 }}
+                            className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                            <div style={{ minWidth: 200, background: '#fff', borderRadius: 14, border: '1px solid #e2e8f0', boxShadow: '0 16px 40px rgba(0,0,0,0.12)', padding: '6px 0' }}>
+                              {cat.children!.map(sub => (
+                                <Link key={sub.id} to={`/urunler?category=${sub.id}`} style={{ display: 'block', padding: '9px 16px', fontSize: 13, color: '#334155', textDecoration: 'none', transition: 'background 0.12s' }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8' }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155' }}>
+                                  {sub.name}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Extra overflow badge if more than 7 */}
+                    {overflow.length > 0 && (
+                      <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#94a3b8', marginLeft: 4, whiteSpace: 'nowrap' }}>
+                        +{overflow.length} daha
+                      </span>
                     )}
                   </div>
-                ))}
-
-                {/* "Tüm Kategoriler" overflow dropdown — only shown when there are more than 7 */}
-                {categories.length > 7 && (
-                  <div className="group" style={{ position: 'relative', flexShrink: 0, marginLeft: 4 }}>
-                    <button style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
-                      padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 700,
-                      color: '#334155', background: '#f8fafc',
-                      border: '1.5px solid #e2e8f0', cursor: 'pointer', whiteSpace: 'nowrap',
-                      transition: 'all 0.15s',
-                    }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLButtonElement).style.color = '#0F5EA8'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#dbeafe' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f8fafc'; (e.currentTarget as HTMLButtonElement).style.color = '#334155'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#e2e8f0' }}>
-                      <LayoutGrid style={{ width: 12, height: 12 }} />
-                      Tüm Kategoriler
-                      <ChevronDown style={{ width: 11, height: 11, color: '#94a3b8' }} />
-                    </button>
-
-                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 4, zIndex: 60 }}
-                      className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
-                      <div style={{
-                        background: '#fff', borderRadius: 16, border: '1px solid #e2e8f0',
-                        boxShadow: '0 16px 48px rgba(0,0,0,0.14)',
-                        padding: '10px 0', minWidth: 240,
-                        display: 'grid', gridTemplateColumns: '1fr 1fr',
-                      }}>
-                        {categories.slice(7).map((cat, idx) => (
-                          <Link key={cat.id} to={`/urunler?category=${cat.id}`} style={{
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            padding: '9px 16px', fontSize: 12.5, color: '#334155',
-                            textDecoration: 'none', transition: 'background 0.12s',
-                          }}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0F5EA8' }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155' }}>
-                            <span style={{ fontSize: 16 }}>{getCatEmoji(cat, idx + 7)}</span>
-                            {cat.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                )
+              })()}
             </div>
           </div>
         )}
+
 
         {/* Mobile menu */}
         {mobileOpen && (

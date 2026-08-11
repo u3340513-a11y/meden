@@ -198,14 +198,14 @@ export default function HomePage() {
             backgroundSize: 'cover', backgroundPosition: 'center',
             opacity: slideIdx === i ? 1 : 0,
             transition: 'opacity 0.9s cubic-bezier(0.4,0,0.2,1)',
-            filter: 'brightness(0.28)',
+            filter: 'brightness(0.55)',
           }} />
         ))}
 
-        {/* Gradient overlay */}
+        {/* Gradient overlay — lighter so images show through */}
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(135deg, rgba(10,30,80,0.96) 0%, rgba(15,65,140,0.85) 55%, rgba(20,100,180,0.75) 100%)',
+          background: 'linear-gradient(120deg, rgba(10,30,80,0.72) 0%, rgba(15,65,140,0.50) 55%, rgba(20,100,180,0.30) 100%)',
           pointerEvents: 'none',
         }} />
 
