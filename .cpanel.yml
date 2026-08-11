@@ -1,37 +1,34 @@
 ---
 deployment:
   tasks:
-    - echo "=== DEPLOY START ===" >> /home/isla2053/deploy.log 2>&1
-    - echo "REPO_DIR=$REPO_DIR" >> /home/isla2053/deploy.log 2>&1
-    - ls /home/isla2053/repositories/meden/ >> /home/isla2053/deploy.log 2>&1
+    - echo "=== DEPLOY START $(date) ===" >> /home/isla2053/deploy.log 2>&1
 
     - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend
     - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api
 
-    - cp -r /home/isla2053/repositories/meden/frontend/dist/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/
-    - echo "frontend copy done" >> /home/isla2053/deploy.log 2>&1
+    # --- FRONTEND (dist -> site kokune, gizli dosyalar dahil) ---
+    - cp -rf /home/isla2053/repositories/meden/frontend/dist/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/ >> /home/isla2053/deploy.log 2>&1 || echo "FRONTEND COPY FAILED" >> /home/isla2053/deploy.log
 
-    - rsync -a --exclude='storage/app/public' --exclude='.env' /home/isla2053/repositories/meden/backend/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/
-    - cp /home/isla2053/repositories/meden/backend/.env.production /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/.env
+    # --- BACKEND (rsync yok; cp -r kullaniliyor. .env ve yuklenen gorseller uzerine yazilmaz) ---
+    - cp -rf /home/isla2053/repositories/meden/backend/app /home/isla2053/repositories/meden/backend/bootstrap /home/isla2053/repositories/meden/backend/config /home/isla2053/repositories/meden/backend/database /home/isla2053/repositories/meden/backend/public /home/isla2053/repositories/meden/backend/resources /home/isla2053/repositories/meden/backend/routes /home/isla2053/repositories/meden/backend/vendor /home/isla2053/repositories/meden/backend/artisan /home/isla2053/repositories/meden/backend/composer.json /home/isla2053/repositories/meden/backend/composer.lock /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/ >> /home/isla2053/deploy.log 2>&1 || echo "BACKEND COPY FAILED" >> /home/isla2053/deploy.log
     - echo "backend copy done" >> /home/isla2053/deploy.log 2>&1
 
-    - cp -r /home/isla2053/repositories/meden/backend/public-cpanel/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api/
-    - echo "api copy done" >> /home/isla2053/deploy.log 2>&1
+    # --- API public entrypoint ---
+    - cp -rf /home/isla2053/repositories/meden/backend/public-cpanel/. /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api/ >> /home/isla2053/deploy.log 2>&1 || echo "API COPY FAILED" >> /home/isla2053/deploy.log
 
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/logs
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/cache
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/sessions
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/views
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
-    - chmod -R 775 /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
+    # --- .env: repoda .env.production varsa kullan, yoksa sunucudaki mevcut .env korunur ---
+    - test -f /home/isla2053/repositories/meden/backend/.env.production && cp -f /home/isla2053/repositories/meden/backend/.env.production /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/.env || echo "env.production yok, mevcut .env korundu" >> /home/isla2053/deploy.log
 
-    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public
-    - ln -sfn /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/storage
+    # --- storage / cache dizinleri ---
+    - mkdir -p /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/logs /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/cache/data /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/sessions /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/views /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache
+    - chmod -R 775 /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache >> /home/isla2053/deploy.log 2>&1 || true
+
+    - ln -sfn /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/app/public /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/storage >> /home/isla2053/deploy.log 2>&1 || true
     - echo "storage symlink done" >> /home/isla2053/deploy.log 2>&1
 
-    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan config:clear >> /home/isla2053/deploy.log 2>&1
-    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan route:clear >> /home/isla2053/deploy.log 2>&1
-    - cd /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend && php artisan view:clear >> /home/isla2053/deploy.log 2>&1
+    # --- Laravel onbellegini dosya seviyesinde temizle (artisan/php yoluna bagimli degil) ---
+    - rm -f /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/config.php /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/routes-v7.php /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/routes.php /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/events.php /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/services.php /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/bootstrap/cache/packages.php >> /home/isla2053/deploy.log 2>&1 || true
+    - rm -rf /home/isla2053/public_html/xn--medeniyetpazar-jgc.com/api_backend/storage/framework/views/*.php >> /home/isla2053/deploy.log 2>&1 || true
     - echo "cache cleared" >> /home/isla2053/deploy.log 2>&1
 
-    - echo "=== DEPLOY END ===" >> /home/isla2053/deploy.log 2>&1
+    - echo "=== DEPLOY END $(date) ===" >> /home/isla2053/deploy.log 2>&1

@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Seller;
 use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::prefix('v1')->group(function () {
 
@@ -135,3 +136,21 @@ Route::prefix('v1')->group(function () {
     });
 
 });
+
+/*
+ * Geriye donuk uyumluluk: eski surumler gorsel URL'lerini APP_URL uzerinden
+ * "/api/storage/..." olarak uretiyordu. Bu istekler Laravel'e "storage/..."
+ * olarak dusuyor ve 404 veriyordu. Asagidaki route bu eski URL'leri dogru
+ * dosyaya yonlendirerek onbellekte kalmis linklerin de calismasini saglar.
+ */
+Route::get('storage/{path}', function (string $path) {
+    $disk = Storage::disk('public');
+
+    if (str_contains($path, '..') || !$disk->exists($path)) {
+        abort(404);
+    }
+
+    return $disk->response($path, null, [
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->where('path', '.*');

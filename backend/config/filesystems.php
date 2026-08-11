@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // false: aksi halde Laravel "GET storage/{path}" route'unu private
+            // dizine bagliyor ve "/api/storage/..." gorsel istekleri 404 oluyor.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
@@ -41,7 +43,9 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // Root-relative: APP_URL "/api" altinda oldugu icin APP_URL ile
+            // uretilen adresler hatali "/api/storage/..." oluyordu.
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

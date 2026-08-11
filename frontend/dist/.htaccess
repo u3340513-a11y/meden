@@ -6,7 +6,11 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 RewriteRule ^api/storage/(.+)$ storage.php?path=$1 [L,QSA]
 
+# /api/* istekleri Laravel'e. !-f sarti kritik: bir onceki kural storage.php'ye
+# rewrite ettiginde REQUEST_URI hala "/api/..." oldugu icin bu kural ikinci
+# geciste tekrar tetiklenip istegi Laravel'e kaciriyordu (404 nedeni).
 RewriteCond %{REQUEST_URI} ^/api [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ api/index.php [L,QSA]
 
 RewriteRule ^storage/(.+)$ storage.php?path=$1 [L,QSA]
