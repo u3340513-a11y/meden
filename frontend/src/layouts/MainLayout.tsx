@@ -214,7 +214,7 @@ export default function MainLayout() {
                 const visible = filtered.slice(0, 7)
                 const overflow = filtered.slice(7)
                 return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '5px 0', overflow: 'hidden', height: 40 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '5px 0' }}>
 
                     {/* Tüm Kategoriler — always first */}
                     <div className="group" style={{ position: 'relative', flexShrink: 0 }}>
