@@ -168,17 +168,25 @@ export default function HomePage() {
     <div className="animate-fade-in">
 
       {/* ─── HERO SLIDER ─── */}
-      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 560 }}>
-        {/* Slide backgrounds */}
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 'min(100vw, 90vh)' }}>
+        {/* Slide backgrounds — img ile kırpma olmadan tam görünüm */}
         {HERO_SLIDES.map((slide, i) => (
-          <div key={i} style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: `url('${slide.image}')`,
-            backgroundSize: 'cover', backgroundPosition: 'center',
-            opacity: slideIdx === i ? 1 : 0,
-            transition: 'opacity 0.9s cubic-bezier(0.4,0,0.2,1)',
-            filter: 'brightness(0.55)',
-          }} />
+          <img
+            key={i}
+            src={slide.image}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              objectFit: 'contain',
+              objectPosition: 'center center',
+              opacity: slideIdx === i ? 1 : 0,
+              transition: 'opacity 0.9s cubic-bezier(0.4,0,0.2,1)',
+              filter: 'brightness(0.55)',
+              background: '#05142b',
+            }}
+          />
         ))}
 
         {/* Gradient overlay — lighter so images show through */}
@@ -195,7 +203,7 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '88px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', minHeight: 560 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '88px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', minHeight: 480 }}>
           <div style={{ maxWidth: 700 }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 7,
