@@ -10,39 +10,18 @@ import type { Product } from '@/types'
 
 const HERO_SLIDES = [
   {
-    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=80',
+    image: '/Gemini Resim-1.jpg',
     title: 'Güvenli alışverişin',
     highlight: 'yeni adresi.',
     desc: 'Binlerce ürün, güvenilir satıcılar ve referans sistemi ile büyüyen bir topluluk.',
     accent: '#E2B93B',
   },
   {
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80',
+    image: '/Gemini Resim-2.jpg',
     title: 'En kaliteli ürünler',
     highlight: 'tek adreste.',
     desc: 'Moda, teknoloji, ev, kozmetik ve daha fazlası — hepsi onaylı satıcılardan.',
     accent: '#10b981',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80',
-    title: 'Hızlı kargo,',
-    highlight: 'güvenli ödeme.',
-    desc: 'Alıcı güvencesi ve entegre kargo takibi ile tamamen güvenli alışveriş.',
-    accent: '#a855f7',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600&q=80',
-    title: 'Satışa başlaman',
-    highlight: 'çok kolay.',
-    desc: 'Birkaç dakikada hesap aç, ürünlerini listele, satışa başla.',
-    accent: '#f97316',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=1600&q=80',
-    title: 'Referans sistemi ile',
-    highlight: 'birlikte büyü.',
-    desc: 'Arkadaşlarını davet et, avantajlı alışveriş yap, topluluğumuzu büyüt.',
-    accent: '#E2B93B',
   },
 ]
 
