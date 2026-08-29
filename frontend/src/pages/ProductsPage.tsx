@@ -14,6 +14,7 @@ const CONDITIONS = [
 
 const SORTS = [
   { value: 'newest', label: 'En Yeni' },
+  { value: 'popular', label: 'Çok Satanlar' },
   { value: 'price_asc', label: 'Fiyat: Düşük → Yüksek' },
   { value: 'price_desc', label: 'Fiyat: Yüksek → Düşük' },
 ]

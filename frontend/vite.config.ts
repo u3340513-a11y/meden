@@ -16,6 +16,9 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        // Canlida Apache /api onekini soyup Laravel'e oyle iletiyor;
+        // lokal artisan serve icin ayni davranisi burada sagliyoruz.
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/sanctum': {
         target: 'http://localhost:8000',

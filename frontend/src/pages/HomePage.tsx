@@ -168,7 +168,7 @@ export default function HomePage() {
     <div className="animate-fade-in">
 
       {/* ─── HERO SLIDER ─── */}
-      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 'min(100vw, 90vh)' }}>
+      <section style={{ position: 'relative', overflow: 'hidden', minHeight: 'min(100vw, 90vh)', display: 'flex', alignItems: 'center' }}>
         {/* Slide backgrounds — img ile kırpma olmadan tam görünüm */}
         {HERO_SLIDES.map((slide, i) => (
           <img
@@ -203,7 +203,7 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '88px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', minHeight: 480 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', flex: 1 }}>
           <div style={{ maxWidth: 700 }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 7,
