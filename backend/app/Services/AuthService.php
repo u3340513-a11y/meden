@@ -8,8 +8,10 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AuthService
 {
@@ -35,7 +37,7 @@ class AuthService
             'referred_by' => $referrer->id,
         ]);
 
-        event(new Registered($user));
+        $this->dispatchRegistered($user);
 
         return $user;
     }
@@ -53,6 +55,7 @@ class AuthService
         if (!$user->hasVerifiedEmail()) {
             throw ValidationException::withMessages([
                 'email' => ['Lütfen önce e-posta adresinizi doğrulayın.'],
+                'verification' => ['required'],
             ]);
         }
 
@@ -88,8 +91,27 @@ class AuthService
     {
         $user = $this->userRepository->findByEmail($email);
 
-        if ($user && !$user->hasVerifiedEmail()) {
+        if (!$user || $user->hasVerifiedEmail()) {
+            return;
+        }
+
+        try {
             $user->sendEmailVerificationNotification();
+        } catch (Throwable $exception) {
+            Log::error('Verification mail could not be sent.', ['user_id' => $user->id, 'error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Why: a mail transport failure must not turn a successful registration into an error.
+     * The user can request a new verification mail afterwards.
+     */
+    private function dispatchRegistered(User $user): void
+    {
+        try {
+            event(new Registered($user));
+        } catch (Throwable $exception) {
+            Log::error('Verification mail could not be sent.', ['user_id' => $user->id, 'error' => $exception->getMessage()]);
         }
     }
 
