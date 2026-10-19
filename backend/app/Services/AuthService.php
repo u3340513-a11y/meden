@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +36,7 @@ class AuthService
             'referred_by' => $referrer->id,
         ]);
 
-        $this->dispatchRegistered($user);
+        $this->sendVerificationMail($user);
 
         return $user;
     }
@@ -95,21 +94,18 @@ class AuthService
             return;
         }
 
-        try {
-            $user->sendEmailVerificationNotification();
-        } catch (Throwable $exception) {
-            Log::error('Verification mail could not be sent.', ['user_id' => $user->id, 'error' => $exception->getMessage()]);
-        }
+        $this->sendVerificationMail($user);
     }
 
     /**
-     * Why: a mail transport failure must not turn a successful registration into an error.
-     * The user can request a new verification mail afterwards.
+     * Why: the default Registered listener is queued, and no queue worker runs on this hosting,
+     * so the mail would never be sent. Sending synchronously also keeps a transport failure from
+     * breaking registration; the user can request a new mail afterwards.
      */
-    private function dispatchRegistered(User $user): void
+    private function sendVerificationMail(User $user): void
     {
         try {
-            event(new Registered($user));
+            $user->sendEmailVerificationNotification();
         } catch (Throwable $exception) {
             Log::error('Verification mail could not be sent.', ['user_id' => $user->id, 'error' => $exception->getMessage()]);
         }
