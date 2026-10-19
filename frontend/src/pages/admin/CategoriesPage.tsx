@@ -5,8 +5,8 @@ import toast from 'react-hot-toast'
 import { FolderTree, Plus, Trash2, Edit2, X, Check } from 'lucide-react'
 
 const ICONS: Record<string, string> = {
-  'kadin': '👗', 'erkek': '👔', 'cocuk': '🧸', 'ev-yasam': '🏠',
-  'elektronik': '💻', 'spor-outdoor': '⚽', 'kozmetik-kisisel-bakim': '💄',
+  'kadin': '🧕', 'erkek': '👔', 'cocuk': '🧸', 'ev-yasam': '🏠',
+  'elektronik': '💻', 'spor-outdoor': '⚽', 'kozmetik-kisisel-bakim': '🧴',
   'kitap-hobi': '📚', 'anne-bebek': '🍼',
 }
 

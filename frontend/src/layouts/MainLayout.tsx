@@ -8,9 +8,9 @@ import { useCartStore } from '@/stores/cartStore'
 import type { Category } from '@/types'
 
 const SLUG_EMOJI: Record<string, string> = {
-  'elektronik': '💻', 'moda': '👗', 'kadin': '👗', 'erkek': '👔', 'cocuk': '🧸',
+  'elektronik': '💻', 'moda': '🧕', 'kadin': '🧕', 'erkek': '👔', 'cocuk': '🧸',
   'ev-yasam': '🏠', 'anne-bebek': '🍼', 'spor-outdoor': '⚽',
-  'kozmetik-kisisel-bakim': '💄', 'kitap-kirtasiye': '📖', 'kitap-hobi': '📚',
+  'kozmetik-kisisel-bakim': '🧴', 'kitap-kirtasiye': '📖', 'kitap-hobi': '📚',
   'oyuncak-hobi': '🎮', 'otomotiv-aksesuar': '🚗', 'supermarket': '🛒',
 }
 const FALLBACK_EMOJIS = ['🎁', '🌟', '✨', '🎯', '💎', '🔑', '🎪', '🏷']

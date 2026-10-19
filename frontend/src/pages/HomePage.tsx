@@ -35,9 +35,9 @@ const FEATURES = [
 
 const CAMPAIGN_BANNERS = [
   { emoji: '💻', title: 'Elektronik Fırsatları', subtitle: "%30'a varan indirim", color: '#0F5EA8', bg: 'linear-gradient(135deg,#0F5EA8,#1A7FD4)', link: '/urunler?category=elektronik' },
-  { emoji: '👗', title: 'Moda & Giyim', subtitle: 'Yeni sezon koleksiyonu', color: '#7c3aed', bg: 'linear-gradient(135deg,#7c3aed,#a855f7)', link: '/urunler?category=moda' },
+  { emoji: '🧕', title: 'Moda & Giyim', subtitle: 'Yeni sezon koleksiyonu', color: '#7c3aed', bg: 'linear-gradient(135deg,#7c3aed,#a855f7)', link: '/urunler?category=moda' },
   { emoji: '🏠', title: 'Ev & Yaşam', subtitle: 'Evinizi güzelleştirin', color: '#059669', bg: 'linear-gradient(135deg,#059669,#10b981)', link: '/urunler?category=ev-yasam' },
-  { emoji: '💄', title: 'Kozmetik', subtitle: 'Doğal & helal ürünler', color: '#db2777', bg: 'linear-gradient(135deg,#db2777,#ec4899)', link: '/urunler?category=kozmetik' },
+  { emoji: '🧴', title: 'Kozmetik', subtitle: 'Doğal & helal ürünler', color: '#db2777', bg: 'linear-gradient(135deg,#db2777,#ec4899)', link: '/urunler?category=kozmetik' },
 ]
 
 function ProductCard({ product, badge, badgeColor }: { product: Product; badge?: string; badgeColor?: string }) {
