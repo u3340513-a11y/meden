@@ -30,9 +30,10 @@ Route::prefix('v1')->group(function () {
         Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->middleware('throttle:2,1');
         Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
         Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-            ->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+            ->whereNumber('id')
+            ->middleware('signed')->name('verification.verify');
         Route::post('email/resend', [VerificationController::class, 'resend'])
-            ->middleware(['auth:sanctum', 'throttle:6,1']);
+            ->middleware('throttle:6,1');
         Route::post('logout', LogoutController::class)->middleware('auth:sanctum');
     });
 

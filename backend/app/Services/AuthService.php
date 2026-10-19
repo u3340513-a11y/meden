@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -59,6 +60,37 @@ class AuthService
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return ['user' => $user, 'token' => $token];
+    }
+
+    /**
+     * Why: unverified users cannot log in, so verification must work without a session.
+     * Input: user id and sha1(email) hash from the signed link. Output: true when verified.
+     */
+    public function verifyEmail(int $userId, string $hash): bool
+    {
+        $user = $this->userRepository->find($userId);
+
+        if (!$user || !hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+            return false;
+        }
+
+        if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return true;
+    }
+
+    /**
+     * Resends the verification mail. Silent for unknown/verified emails to avoid user enumeration.
+     */
+    public function resendVerification(string $email): void
+    {
+        $user = $this->userRepository->findByEmail($email);
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
     }
 
     public function logout(): void
