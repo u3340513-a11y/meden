@@ -13,6 +13,7 @@ import ProductDetailPage from '@/pages/ProductDetailPage'
 import LoginPage from '@/pages/auth/LoginPage'
 import RegisterPage from '@/pages/auth/RegisterPage'
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
 
 import ProfilePage from '@/pages/dashboard/ProfilePage'
 import OrdersPage from '@/pages/dashboard/OrdersPage'
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/giris" element={<LoginPage />} />
         <Route path="/kayit" element={<RegisterPage />} />
         <Route path="/sifremi-unuttum" element={<ForgotPasswordPage />} />
+        <Route path="/sifre-sifirla/:token" element={<ResetPasswordPage />} />
       </Route>
 
       <Route element={<MainLayout />}>

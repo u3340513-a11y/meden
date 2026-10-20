@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import api, { csrf } from '@/lib/api'
+import api from '@/lib/api'
 import toast from 'react-hot-toast'
 
 export default function ForgotPasswordPage() {
@@ -12,10 +12,9 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      await csrf()
       await api.post('/auth/forgot-password', { email })
       setSent(true)
-      toast.success('Şifre sıfırlama bağlantısı gönderildi.')
+      toast.success('Talebiniz alındı.')
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Bir hata oluştu.')
     } finally {
@@ -30,7 +29,7 @@ export default function ForgotPasswordPage() {
           <span className="text-3xl">📧</span>
         </div>
         <h2 className="text-xl font-bold mb-2">E-posta Gönderildi</h2>
-        <p className="text-text-muted text-sm mb-6">Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.</p>
+        <p className="text-text-muted text-sm mb-6">E-posta adresi kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelmezse spam klasörünü kontrol edin.</p>
         <Link to="/giris" className="text-sm text-primary font-medium hover:underline">Giriş Sayfasına Dön</Link>
       </div>
     )
