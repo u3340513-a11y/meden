@@ -4,21 +4,24 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Throwable;
 
 class AuthService
 {
+    private const TOKEN_NAME = 'auth-token';
+
     public function __construct(
         private UserRepositoryInterface $userRepository,
     ) {}
 
-    public function register(array $data): User
+    /**
+     * Why: membership is gated by a valid referral code only; no e-mail verification step.
+     * Input: validated name, email, password, referral_code. Output: ['user' => User, 'token' => string].
+     */
+    public function register(array $data): array
     {
         $referrer = $this->userRepository->findByReferralCode($data['referral_code']);
 
@@ -36,79 +39,22 @@ class AuthService
             'referred_by' => $referrer->id,
         ]);
 
-        $this->sendVerificationMail($user);
-
-        return $user;
+        return ['user' => $user, 'token' => $this->issueToken($user)];
     }
 
     public function login(array $credentials): array
     {
         $user = $this->userRepository->findByEmail($credentials['email']);
 
-        if (!$user || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['E-posta veya şifre hatalı.'],
             ]);
         }
 
-        if (!$user->hasVerifiedEmail()) {
-            throw ValidationException::withMessages([
-                'email' => ['Lütfen önce e-posta adresinizi doğrulayın.'],
-                'verification' => ['required'],
-            ]);
-        }
-
         $user->tokens()->delete();
-        $token = $user->createToken('auth-token')->plainTextToken;
 
-        return ['user' => $user, 'token' => $token];
-    }
-
-    /**
-     * Why: unverified users cannot log in, so verification must work without a session.
-     * Input: user id and sha1(email) hash from the signed link. Output: true when verified.
-     */
-    public function verifyEmail(int $userId, string $hash): bool
-    {
-        $user = $this->userRepository->find($userId);
-
-        if (!$user || !hash_equals(sha1($user->getEmailForVerification()), $hash)) {
-            return false;
-        }
-
-        if (!$user->hasVerifiedEmail() && $user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-
-        return true;
-    }
-
-    /**
-     * Resends the verification mail. Silent for unknown/verified emails to avoid user enumeration.
-     */
-    public function resendVerification(string $email): void
-    {
-        $user = $this->userRepository->findByEmail($email);
-
-        if (!$user || $user->hasVerifiedEmail()) {
-            return;
-        }
-
-        $this->sendVerificationMail($user);
-    }
-
-    /**
-     * Why: the default Registered listener is queued, and no queue worker runs on this hosting,
-     * so the mail would never be sent. Sending synchronously also keeps a transport failure from
-     * breaking registration; the user can request a new mail afterwards.
-     */
-    private function sendVerificationMail(User $user): void
-    {
-        try {
-            $user->sendEmailVerificationNotification();
-        } catch (Throwable $exception) {
-            Log::error('Verification mail could not be sent.', ['user_id' => $user->id, 'error' => $exception->getMessage()]);
-        }
+        return ['user' => $user, 'token' => $this->issueToken($user)];
     }
 
     public function logout(): void
@@ -131,5 +77,10 @@ class AuthService
         } while ($this->userRepository->findByReferralCode($code));
 
         return $code;
+    }
+
+    private function issueToken(User $user): string
+    {
+        return $user->createToken(self::TOKEN_NAME)->plainTextToken;
     }
 }

@@ -3,27 +3,23 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
-import ResendVerification from '@/components/ResendVerification'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [needsVerification, setNeedsVerification] = useState(false)
   const login = useAuthStore((s) => s.login)
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setNeedsVerification(false)
     setLoading(true)
     try {
       await login(email, password)
       toast.success('Hoş geldiniz! 👋')
       navigate('/')
     } catch (err: any) {
-      setNeedsVerification(!!err.response?.data?.errors?.verification)
       const msg = err.response?.data?.errors?.email?.[0]
         || err.response?.data?.message
         || 'Giriş başarısız.'
@@ -120,15 +116,6 @@ export default function LoginPage() {
           )}
         </button>
       </form>
-
-      {needsVerification && (
-        <div style={{ marginTop: 20, padding: 16, background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12, textAlign: 'center' }}>
-          <p style={{ fontSize: 13, color: '#92400e', marginBottom: 12 }}>
-            Hesabınız henüz doğrulanmadı. E-postanıza gönderilen bağlantıya tıklayın.
-          </p>
-          <ResendVerification email={email} />
-        </div>
-      )}
 
       {/* Divider */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '24px 0' }}>

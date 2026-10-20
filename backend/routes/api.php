@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ReferralController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
@@ -29,11 +28,6 @@ Route::prefix('v1')->group(function () {
         Route::post('login', LoginController::class)->middleware('throttle:5,1');
         Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->middleware('throttle:2,1');
         Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
-        Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-            ->whereNumber('id')
-            ->middleware('signed')->name('verification.verify');
-        Route::post('email/resend', [VerificationController::class, 'resend'])
-            ->middleware('throttle:6,1');
         Route::post('logout', LogoutController::class)->middleware('auth:sanctum');
     });
 
@@ -44,7 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{slug}', [ProductController::class, 'show']);
 
-    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('user', fn () => new \App\Http\Resources\UserResource(auth()->user()));
 

@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { Eye, EyeOff, User, Mail, Lock, Hash, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
-import ResendVerification from '@/components/ResendVerification'
 
 const Field = ({
   icon: Icon, label, children, hint
@@ -32,7 +31,7 @@ export default function RegisterPage() {
   const [refValid, setRefValid] = useState<boolean | null>(null)
   const [refName, setRefName] = useState('')
   const register = useAuthStore((s) => s.register)
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (form.referral_code.length === 8) {
@@ -50,7 +49,8 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register(form)
-      setRegisteredEmail(form.email)
+      toast.success('Kayıt başarılı, hoş geldiniz! 🎉')
+      navigate('/')
     } catch (err: any) {
       const errors = err.response?.data?.errors
       if (errors) Object.values(errors).flat().forEach(msg => toast.error(msg as string))
@@ -59,25 +59,6 @@ export default function RegisterPage() {
   }
 
   const inputStyle = { paddingLeft: 42, paddingRight: 16 }
-
-  if (registeredEmail) {
-    return (
-      <div className="animate-slide-up" style={{ textAlign: 'center' }}>
-        <Mail style={{ width: 56, height: 56, color: '#0F5EA8', margin: '0 auto 16px' }} />
-        <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>E-postanızı doğrulayın 📧</h2>
-        <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.6, marginBottom: 6 }}>
-          Kaydınız oluşturuldu. <strong>{registeredEmail}</strong> adresine bir doğrulama bağlantısı gönderdik.
-        </p>
-        <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, marginBottom: 24 }}>
-          Giriş yapabilmek için e-postanızdaki bağlantıya tıklamanız gerekir. E-posta gelmediyse spam klasörünü kontrol edin.
-        </p>
-        <ResendVerification email={registeredEmail} />
-        <p style={{ marginTop: 24, fontSize: 14 }}>
-          <Link to="/giris" style={{ color: '#0F5EA8', fontWeight: 700, textDecoration: 'none' }}>Giriş sayfasına git →</Link>
-        </p>
-      </div>
-    )
-  }
 
   return (
     <div className="animate-slide-up">
