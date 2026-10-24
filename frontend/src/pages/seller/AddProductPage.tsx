@@ -16,6 +16,11 @@ const LABEL: React.CSSProperties = {
   display: 'block', marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.06em',
 }
 
+const MAX_IMAGES = 10
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const HTTP_PAYLOAD_TOO_LARGE = 413
+
 export default function SellerAddProductPage() {
   const navigate = useNavigate()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -49,9 +54,12 @@ export default function SellerAddProductPage() {
 
   const handleImages = (files: FileList | File[] | null) => {
     if (!files) return
-    const arr = Array.from(files)
-      .filter(f => f.type.startsWith('image/'))
-      .slice(0, 10 - images.length)
+    const incoming = Array.from(files)
+    const validType = incoming.filter(f => ALLOWED_IMAGE_TYPES.includes(f.type))
+    if (validType.length < incoming.length) toast.error('Sadece JPG, PNG veya WEBP görseller yüklenebilir.')
+    const validSize = validType.filter(f => f.size <= MAX_IMAGE_BYTES)
+    if (validSize.length < validType.length) toast.error('Görsel boyutu en fazla 5MB olabilir.')
+    const arr = validSize.slice(0, MAX_IMAGES - images.length)
     if (arr.length === 0) return
     setImages(prev => [...prev, ...arr])
     setPreviews(prev => [...prev, ...arr.map(f => URL.createObjectURL(f))])
@@ -75,7 +83,8 @@ export default function SellerAddProductPage() {
     },
     onError: (err: any) => {
       const errors = err.response?.data?.errors
-      if (errors) Object.values(errors).flat().forEach((m: any) => toast.error(String(m)))
+      if (err.response?.status === HTTP_PAYLOAD_TOO_LARGE) toast.error('Görseller çok büyük. Daha küçük görseller seçin.')
+      else if (errors) Object.values(errors).flat().forEach((m: any) => toast.error(String(m)))
       else toast.error(err.response?.data?.message || 'Ürün eklenemedi.')
     },
   })
