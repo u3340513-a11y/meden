@@ -1,8 +1,6 @@
 import { create } from 'zustand'
-import api from '@/lib/api'
+import api, { AUTH_TOKEN_KEY as TOKEN_KEY } from '@/lib/api'
 import type { User } from '@/types'
-
-const TOKEN_KEY = 'auth_token'
 
 export function setAuthToken(token: string | null) {
   if (token) {
