@@ -47,7 +47,7 @@ export default function MainLayout() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', overflowX: 'clip' }}>
       <header style={{
         position: 'sticky', top: 0, zIndex: 50,
         background: '#fff',
@@ -62,7 +62,7 @@ export default function MainLayout() {
                 style={{ height: 44, width: 'auto', borderRadius: 8, objectFit: 'contain' }} />
             </Link>
 
-            <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: 520, display: 'flex' }}
+            <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: 520 }}
               className="hidden md:flex">
               <div style={{ position: 'relative', width: '100%' }}>
                 <Search style={{
@@ -173,7 +173,7 @@ export default function MainLayout() {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ gap: 8 }} className="hidden md:flex">
                   <Link to="/giris" style={{
                     padding: '8px 18px', fontSize: 13, fontWeight: 600,
                     color: '#0F5EA8', textDecoration: 'none', borderRadius: 10,
@@ -335,6 +335,25 @@ export default function MainLayout() {
                     {cat.name}
                   </Link>
                 ))}
+              </div>
+            )}
+            {!isAuthenticated && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 16 }}>
+                <Link to="/giris" onClick={() => setMobileOpen(false)} style={{
+                  padding: '12px 0', textAlign: 'center', fontSize: 14, fontWeight: 700,
+                  color: '#0F5EA8', textDecoration: 'none', borderRadius: 12,
+                  border: '1.5px solid #0F5EA8', background: '#fff',
+                }}>
+                  Giriş Yap
+                </Link>
+                <Link to="/kayit" onClick={() => setMobileOpen(false)} style={{
+                  padding: '12px 0', textAlign: 'center', fontSize: 14, fontWeight: 700,
+                  color: '#fff', textDecoration: 'none', borderRadius: 12,
+                  background: 'linear-gradient(135deg,#0F5EA8,#1A7FD4)',
+                  boxShadow: '0 4px 12px rgba(15,94,168,0.25)',
+                }}>
+                  Kayıt Ol
+                </Link>
               </div>
             )}
           </div>
