@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   User, ShoppingBag, Heart, MapPin, Headphones, Share2,
   Store, Package, ClipboardList,
@@ -110,6 +110,11 @@ export default function DashboardLayout() {
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
 
   const handleLogout = async () => {
     await logout()
@@ -209,8 +214,9 @@ export default function DashboardLayout() {
         <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0 20px', gap: 16 }}>
           {/* Mobile menu button */}
           <button onClick={() => setMobileOpen(!mobileOpen)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.muted, padding: 6, display: 'none' }}
-            className="lg:hidden">
+            aria-label="Menüyü aç/kapat" aria-expanded={mobileOpen}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.muted, padding: 6 }}
+            className="flex lg:hidden">
             {mobileOpen ? <X style={{ width: 20, height: 20 }} /> : <Menu style={{ width: 20, height: 20 }} />}
           </button>
 
@@ -257,10 +263,10 @@ export default function DashboardLayout() {
         {/* Mobile sidebar overlay */}
         {mobileOpen && (
           <div style={{
-            position: 'fixed', inset: 0, zIndex: 40,
+            position: 'fixed', top: 60, left: 0, right: 0, bottom: 0, zIndex: 40,
             background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(2px)',
           }} onClick={() => setMobileOpen(false)}>
-            <div style={{ width: 260, height: '100%' }} onClick={e => e.stopPropagation()}>
+            <div style={{ width: 'min(280px, 85vw)', height: '100%' }} onClick={e => e.stopPropagation()}>
               <Sidebar />
             </div>
           </div>
