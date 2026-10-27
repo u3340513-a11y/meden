@@ -31,9 +31,24 @@ export default function AuthLayout() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <Link to="/" className="flex items-center justify-center mb-8 lg:hidden">
+      <div
+        className="flex-1 flex items-center justify-center"
+        style={{
+          padding: '32px 20px',
+          background: 'linear-gradient(180deg, #eef4fb 0%, #f8fafc 60%)',
+        }}
+      >
+        <div
+          className="w-full max-w-md"
+          style={{
+            background: '#fff',
+            borderRadius: 24,
+            padding: '32px 24px',
+            boxShadow: '0 12px 40px rgba(15,94,168,0.10)',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <Link to="/" className="flex items-center justify-center lg:hidden" style={{ marginBottom: 24 }}>
             <img src="/logo.jpeg" alt="Medeniyet Pazarı" className="h-16 w-auto rounded-xl object-contain" />
           </Link>
           <Outlet />
