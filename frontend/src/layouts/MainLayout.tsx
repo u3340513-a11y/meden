@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown, LayoutGrid } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
@@ -28,9 +28,33 @@ function getCatEmoji(cat: Category, idx: number): string {
 export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [accountOpen, setAccountOpen] = useState(false)
+  const accountRef = useRef<HTMLDivElement>(null)
   const { user, isAuthenticated, logout } = useAuthStore()
   const cartItems = useCartStore((s) => s.items)
   const navigate = useNavigate()
+
+  /**
+   * Why: the account menu opens on click, so it must also close when the user taps elsewhere or presses Escape.
+   * What: registers outside-pointer and Escape listeners only while the menu is open.
+   */
+  useEffect(() => {
+    if (!accountOpen) return
+    const closeOnOutsidePointer = (e: MouseEvent | TouchEvent) => {
+      if (!accountRef.current?.contains(e.target as Node)) setAccountOpen(false)
+    }
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAccountOpen(false)
+    }
+    document.addEventListener('mousedown', closeOnOutsidePointer)
+    document.addEventListener('touchstart', closeOnOutsidePointer)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('mousedown', closeOnOutsidePointer)
+      document.removeEventListener('touchstart', closeOnOutsidePointer)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [accountOpen])
 
   const { data: categories } = useQuery({
     queryKey: ['categories'],
@@ -108,8 +132,10 @@ export default function MainLayout() {
               </Link>
 
               {isAuthenticated ? (
-                <div style={{ position: 'relative' }} className="group">
-                  <button style={{
+                <div style={{ position: 'relative' }} ref={accountRef}>
+                  <button onClick={() => setAccountOpen(o => !o)}
+                    aria-haspopup="menu" aria-expanded={accountOpen} aria-label="Hesap menüsü"
+                    style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '6px 12px', borderRadius: 10, border: 'none',
                     background: 'transparent', cursor: 'pointer',
@@ -127,20 +153,21 @@ export default function MainLayout() {
                     </span>
                     <ChevronDown style={{ width: 13, height: 13, color: '#94a3b8' }} className="hidden lg:block" />
                   </button>
-                  <div style={{
+                  {accountOpen && (
+                  <div role="menu" style={{
                     position: 'absolute', right: 0, top: '100%', marginTop: 6,
                     width: 220, background: '#fff',
                     borderRadius: 14, border: '1px solid #e2e8f0',
                     boxShadow: '0 16px 40px rgba(0,0,0,0.12)',
                     padding: '6px 0', zIndex: 60,
-                  }} className="opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  }}>
                     {[
                       { to: '/hesabim', label: 'Hesabım' },
                       { to: '/siparislerim', label: 'Siparişlerim' },
                       { to: '/favorilerim', label: 'Favorilerim' },
                       { to: '/satis/panel', label: 'Satıcı Paneli' },
                     ].map(({ to, label }) => (
-                      <Link key={to} to={to} style={{
+                      <Link key={to} to={to} onClick={() => setAccountOpen(false)} style={{
                         display: 'block', padding: '10px 16px',
                         fontSize: 13, color: '#334155', textDecoration: 'none',
                         transition: 'background 0.12s',
@@ -151,7 +178,7 @@ export default function MainLayout() {
                       </Link>
                     ))}
                     {(user?.role === 'admin' || user?.role === 'super_admin') && (
-                      <Link to="/admin" style={{
+                      <Link to="/admin" onClick={() => setAccountOpen(false)} style={{
                         display: 'block', padding: '10px 16px',
                         fontSize: 13, color: '#0F5EA8', fontWeight: 600, textDecoration: 'none',
                       }}
@@ -161,7 +188,7 @@ export default function MainLayout() {
                       </Link>
                     )}
                     <div style={{ height: 1, background: '#f1f5f9', margin: '4px 0' }} />
-                    <button onClick={() => logout()} style={{
+                    <button onClick={() => { setAccountOpen(false); logout() }} style={{
                       width: '100%', textAlign: 'left', padding: '10px 16px',
                       fontSize: 13, color: '#ef4444', background: 'none', border: 'none',
                       cursor: 'pointer',
@@ -171,6 +198,7 @@ export default function MainLayout() {
                       Çıkış Yap
                     </button>
                   </div>
+                  )}
                 </div>
               ) : (
                 <div style={{ gap: 8 }} className="hidden md:flex">
