@@ -102,8 +102,8 @@ export default function AdminProductsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {list.map((p: any) => (
-            <div key={p.id} className="card" style={{ padding: '18px 22px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <div key={p.id} className="card" style={{ padding: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 {/* Thumbnail */}
                 <div style={{
                   width: 60, height: 60, borderRadius: 12, overflow: 'hidden', flexShrink: 0,
@@ -120,27 +120,37 @@ export default function AdminProductsPage() {
 
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <h3 style={{
+                    fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 6, lineHeight: 1.35,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                    overflowWrap: 'anywhere',
+                  }}>
                     {p.name}
                   </h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>
-                      👤 <strong>{p.seller?.name}</strong>
-                    </span>
-                    <span style={{ fontSize: 15, fontWeight: 800, color: '#0F5EA8' }}>
+                  <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    👤 <strong>{p.seller?.name}</strong>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: '#0F5EA8', whiteSpace: 'nowrap' }}>
                       {Number(p.current_price).toLocaleString('tr-TR')} ₺
                     </span>
                     {p.condition && (
-                      <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#f1f5f9', padding: '3px 8px', borderRadius: 999 }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#f1f5f9', padding: '3px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
                         {CONDITION_MAP[p.condition] || p.condition}
                       </span>
                     )}
                     {p.category && (
-                      <span style={{ fontSize: 11, color: '#94a3b8' }}>🗂 {p.category?.name}</span>
+                      <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>🗂 {p.category?.name}</span>
                     )}
                   </div>
                 </div>
+              </div>
 
+              {/* Status + actions */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 8,
+                marginTop: 14, paddingTop: 12, borderTop: '1px solid #f1f5f9',
+              }}>
                 {/* Actions */}
                 {status === 'pending' && (
                   <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
@@ -164,10 +174,10 @@ export default function AdminProductsPage() {
                   </div>
                 )}
                 {status === 'approved' && (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '5px 12px', borderRadius: 999 }}>✓ Onaylı</span>
+                  <span style={{ marginRight: 'auto', fontSize: 11, fontWeight: 700, color: '#059669', background: '#ecfdf5', padding: '5px 12px', borderRadius: 999 }}>✓ Onaylı</span>
                 )}
                 {status === 'rejected' && (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#dc2626', background: '#fff5f5', padding: '5px 12px', borderRadius: 999 }}>✗ Reddedildi</span>
+                  <span style={{ marginRight: 'auto', fontSize: 11, fontWeight: 700, color: '#dc2626', background: '#fff5f5', padding: '5px 12px', borderRadius: 999 }}>✗ Reddedildi</span>
                 )}
                 <button onClick={() => confirmDelete(p.id)}
                   disabled={remove.isPending}
