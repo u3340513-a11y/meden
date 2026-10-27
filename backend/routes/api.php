@@ -98,7 +98,7 @@ Route::prefix('v1')->group(function () {
             Route::get('products', [Admin\ProductController::class, 'index']);
             Route::patch('products/{id}/approve', [Admin\ProductController::class, 'approve']);
             Route::patch('products/{id}/reject', [Admin\ProductController::class, 'reject']);
-            Route::delete('products/{id}', [Admin\ProductController::class, 'destroy'])->middleware('super_admin');
+            Route::delete('products/{id}', [Admin\ProductController::class, 'destroy']);
             Route::get('orders', [Admin\OrderController::class, 'index']);
             Route::get('orders/{id}', [Admin\OrderController::class, 'show']);
             Route::get('refunds', [Admin\RefundController::class, 'index']);
