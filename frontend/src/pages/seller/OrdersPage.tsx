@@ -124,7 +124,7 @@ export default function SellerOrdersPage() {
 
                 {/* Expandable detail */}
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid #f1f5f9', padding: '20px', background: '#fafafa', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                  <div className="stack-mobile" style={{ borderTop: '1px solid #f1f5f9', padding: '20px', background: '#fafafa', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                     {/* Buyer info */}
                     <div>
                       <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>

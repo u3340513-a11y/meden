@@ -29,7 +29,7 @@ export default function ProductDetailPage() {
 
   if (isLoading) return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '36px 20px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+      <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
         <div className="skeleton" style={{ aspectRatio: '1', borderRadius: 20 }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {[80, 200, 80, 120, 60].map((w, i) => (
@@ -77,7 +77,7 @@ export default function ProductDetailPage() {
         </span>
       </nav>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
+      <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
         {/* Images */}
         <div>
           <div style={{

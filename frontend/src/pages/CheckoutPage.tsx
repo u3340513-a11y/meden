@@ -51,7 +51,7 @@ export default function CheckoutPage() {
         <p style={{ fontSize: 13, color: '#94a3b8', paddingLeft: 46 }}>🔒 256-bit SSL şifreleme ile korumalı</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start' }}>
+      <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, alignItems: 'start' }}>
         {/* Left */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 

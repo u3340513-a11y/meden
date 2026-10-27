@@ -273,7 +273,7 @@ export default function DashboardLayout() {
         )}
 
         {/* Main content */}
-        <main style={{ flex: 1, padding: 28, minWidth: 0 }} className="animate-fade-in">
+        <main style={{ flex: 1, minWidth: 0 }} className="dashboard-main animate-fade-in">
           <Outlet />
         </main>
       </div>

@@ -207,7 +207,7 @@ export default function SellerEditProductPage() {
 
         <div className="card" style={{ padding: 24 }}>
           <h2 style={{ fontSize: 15, fontWeight: 800, color: '#1a1a2e', marginBottom: 16 }}>Fiyat & Stok</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+          <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
             <div>
               <label style={LABEL}>Satış Fiyatı (₺) *</label>
               <input className="field" type="number" min="1" step="0.01" value={form.price} onChange={e => set('price', e.target.value)} />

@@ -21,6 +21,7 @@ body {
   color: #1a1a2e;
   background: #f8f9fa;
   line-height: 1.6;
+  overflow-x: clip;
 }
 
 ::-webkit-scrollbar { width: 5px; }
@@ -137,4 +138,16 @@ input:focus, textarea:focus, select:focus {
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
+}
+
+/* ── Responsive helpers ──────────────────────────────────────────────
+   Pages style layouts inline (and the global reset above overrides Tailwind spacing
+   utilities), so breakpoints that inline styles cannot express live here. */
+.dashboard-main { padding: 28px; }
+input, select, textarea { max-width: 100%; }
+
+@media (max-width: 767px) {
+  .dashboard-main { padding: 16px; }
+  .stack-mobile { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .pad-compact { padding: 16px !important; }
 }

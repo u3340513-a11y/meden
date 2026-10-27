@@ -68,7 +68,7 @@ function AddressModal({ onClose }: AddressFormProps) {
             <textarea className="field" value={form.address_line} onChange={e => set('address_line', e.target.value)}
               placeholder="Mahalle, sokak, bina no, daire..." rows={3} style={{ resize: 'vertical' }} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 6 }}>İl *</label>
               <select className="field" value={form.city_id}
@@ -178,7 +178,7 @@ export default function AddressesPage() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(300px,100%),1fr))', gap: 16 }}>
           {addresses.map((addr: any) => (
             <div key={addr.id} className="card" style={{
               padding: 22,
