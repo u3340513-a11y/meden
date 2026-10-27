@@ -51,4 +51,15 @@ class ProductController extends Controller
         ]);
         return $this->success(message: 'Ürün reddedildi.');
     }
+
+    /**
+     * Why: super admins must be able to remove any product, including approved ones.
+     * What: soft deletes the product so existing order history stays intact.
+     * Input: product id. Output: success JSON. Access is limited by the super_admin route middleware.
+     */
+    public function destroy(int $id)
+    {
+        $this->productRepository->findOrFail($id)->delete();
+        return $this->success(message: 'Ürün silindi.');
+    }
 }

@@ -2,7 +2,11 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
-import { ShieldCheck, CheckCircle, XCircle, Package, Filter } from 'lucide-react'
+import { ShieldCheck, CheckCircle, XCircle, Package, Filter, Trash2 } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+
+const SUPER_ADMIN_ROLE = 'super_admin'
+const DELETE_CONFIRM_MESSAGE = 'Bu ürünü silmek istediğinize emin misiniz?'
 
 const STATUS_OPTS = [
   { value: 'pending', label: 'Onay Bekleyen' },
@@ -21,6 +25,7 @@ export default function AdminProductsPage() {
   const [status, setStatus] = useState('pending')
   const [rejectId, setRejectId] = useState<number | null>(null)
   const [rejectReason, setRejectReason] = useState('')
+  const isSuperAdmin = useAuthStore(s => s.user?.role) === SUPER_ADMIN_ROLE
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-products', status],
@@ -43,6 +48,16 @@ export default function AdminProductsPage() {
     },
     onError: () => toast.error('İşlem başarısız.'),
   })
+
+  const remove = useMutation({
+    mutationFn: (id: number) => api.delete(`/admin/products/${id}`),
+    onSuccess: () => { toast.success('Ürün silindi.'); qc.invalidateQueries({ queryKey: ['admin-products'] }) },
+    onError: (err: any) => toast.error(err.response?.data?.message || 'İşlem başarısız.'),
+  })
+
+  const confirmDelete = (id: number) => {
+    if (window.confirm(DELETE_CONFIRM_MESSAGE)) remove.mutate(id)
+  }
 
   const list: any[] = data?.data ?? []
 
@@ -156,6 +171,19 @@ export default function AdminProductsPage() {
                 )}
                 {status === 'rejected' && (
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#dc2626', background: '#fff5f5', padding: '5px 12px', borderRadius: 999 }}>✗ Reddedildi</span>
+                )}
+                {isSuperAdmin && (
+                  <button onClick={() => confirmDelete(p.id)}
+                    disabled={remove.isPending}
+                    aria-label={`${p.name} ürününü sil`}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
+                      padding: '9px 16px', background: '#fff5f5', border: '1.5px solid #fecaca',
+                      borderRadius: 10, cursor: 'pointer', color: '#dc2626', fontSize: 12, fontWeight: 700,
+                      opacity: remove.isPending ? 0.7 : 1,
+                    }}>
+                    <Trash2 style={{ width: 14, height: 14 }} /> Sil
+                  </button>
                 )}
               </div>
             </div>
