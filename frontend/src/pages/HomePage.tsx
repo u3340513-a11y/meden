@@ -23,6 +23,13 @@ const HERO_SLIDES = [
     desc: 'Moda, teknoloji, ev, kozmetik ve daha fazlası — hepsi onaylı satıcılardan.',
     accent: '#10b981',
   },
+  {
+    image: '/WhatsApp Image 2026-11-01 at 15.37.32.jpeg',
+    title: 'Hem al,',
+    highlight: 'hem sat.',
+    desc: 'Tek hesapla alıcı ve satıcı ol, güvenli ödeme ve hızlı kargo ile alışverişin keyfini çıkar.',
+    accent: '#7c3aed',
+  },
 ]
 
 
