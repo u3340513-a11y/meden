@@ -52,9 +52,11 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
+        $frontendUrl = rtrim(config('app.frontend_url'), '/');
+
         return $this->success([
             'referral_code' => $user->referral_code,
-            'referral_link' => "https://medeniyetpazari.com/kayit?ref={$user->referral_code}",
+            'referral_link' => "{$frontendUrl}/kayit?ref={$user->referral_code}",
             'referral_count' => $this->userRepository->countReferrals($user->id),
         ]);
     }

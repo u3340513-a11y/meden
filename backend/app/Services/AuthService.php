@@ -19,7 +19,7 @@ class AuthService
 
     /**
      * Why: membership is gated by a valid referral code only; no e-mail verification step.
-     * Input: validated name, email, password, referral_code. Output: ['user' => User, 'token' => string].
+     * Input: validated name, email, phone, password, referral_code. Output: ['user' => User, 'token' => string].
      */
     public function register(array $data): array
     {
@@ -34,6 +34,7 @@ class AuthService
         $user = $this->userRepository->create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
             'referral_code' => $this->generateUniqueReferralCode(),
             'referred_by' => $referrer->id,

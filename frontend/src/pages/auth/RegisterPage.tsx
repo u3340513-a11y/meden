@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
-import { Eye, EyeOff, User, Mail, Lock, Hash, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, User, Mail, Phone, Lock, Hash, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
 
@@ -23,7 +23,7 @@ const Field = ({
 export default function RegisterPage() {
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState({
-    name: '', email: '', password: '', password_confirmation: '',
+    name: '', email: '', phone: '', password: '', password_confirmation: '',
     referral_code: searchParams.get('ref') || '',
   })
   const [showPw, setShowPw] = useState(false)
@@ -111,6 +111,12 @@ export default function RegisterPage() {
         <Field icon={Mail} label="E-posta Adresi">
           <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
             className="field" style={inputStyle} placeholder="ornek@email.com" required autoComplete="email" />
+        </Field>
+
+        <Field icon={Phone} label="Cep Telefonu">
+          <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
+            className="field" style={inputStyle} placeholder="05XX XXX XX XX" required autoComplete="tel"
+            inputMode="tel" maxLength={17} pattern="^(\+90|0)?\s?5[0-9\s]{9,13}$" title="Geçerli bir cep telefonu numarası giriniz (örn. 05XX XXX XX XX)" />
         </Field>
 
         <Field icon={Lock} label="Şifre">

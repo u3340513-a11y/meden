@@ -6,6 +6,10 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'http://localhost:3000',
+        'https://medeniyetpazarı.com',
+        'https://www.medeniyetpazarı.com',
+        'https://xn--medeniyetpazar-jgc.com',
+        'https://www.xn--medeniyetpazar-jgc.com',
         'https://medeniyetpazari.com',
         'https://www.medeniyetpazari.com',
     ],
