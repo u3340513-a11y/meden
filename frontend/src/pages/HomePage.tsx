@@ -3,33 +3,15 @@ import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect, useCallback } from 'react'
 import {
   ShoppingBag, Shield, Truck, Users, ArrowRight, Star,
-  ChevronRight, Heart, Sparkles, Tag, TrendingUp, Flame, Zap, Award, Clock, ChevronLeft
+  ChevronRight, Heart, Tag, TrendingUp, Flame, Zap, Award, Clock, ChevronLeft
 } from 'lucide-react'
 import api from '@/lib/api'
 import type { Product } from '@/types'
 
 const HERO_SLIDES = [
-  {
-    image: '/Gemini Resim-1.jpg',
-    title: 'Güvenli alışverişin',
-    highlight: 'yeni adresi.',
-    desc: 'Binlerce ürün, güvenilir satıcılar ve referans sistemi ile büyüyen bir topluluk.',
-    accent: '#E2B93B',
-  },
-  {
-    image: '/Gemini Resim-2.jpg',
-    title: 'En kaliteli ürünler',
-    highlight: 'tek adreste.',
-    desc: 'Moda, teknoloji, ev, kozmetik ve daha fazlası — hepsi onaylı satıcılardan.',
-    accent: '#10b981',
-  },
-  {
-    image: '/WhatsApp Image 2026-11-01 at 15.37.32.jpeg',
-    title: 'Hem al,',
-    highlight: 'hem sat.',
-    desc: 'Tek hesapla alıcı ve satıcı ol, güvenli ödeme ve hızlı kargo ile alışverişin keyfini çıkar.',
-    accent: '#7c3aed',
-  },
+  { image: '/Gemini Resim-1.jpg' },
+  { image: '/Gemini Resim-2.jpg' },
+  { image: '/WhatsApp Image 2026-11-01 at 15.37.32.jpeg' },
 ]
 
 
@@ -190,76 +172,10 @@ export default function HomePage() {
               objectPosition: 'center center',
               opacity: slideIdx === i ? 1 : 0,
               transition: 'opacity 0.9s cubic-bezier(0.4,0,0.2,1)',
-              filter: 'brightness(0.55)',
               background: '#05142b',
             }}
           />
         ))}
-
-        {/* Gradient overlay — lighter so images show through */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(120deg, rgba(10,30,80,0.72) 0%, rgba(15,65,140,0.50) 55%, rgba(20,100,180,0.30) 100%)',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Ambient blobs */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -80, right: 60, width: 480, height: 480, background: `${HERO_SLIDES[slideIdx].accent}22`, borderRadius: '50%', filter: 'blur(90px)', transition: 'background 1s' }} />
-          <div style={{ position: 'absolute', bottom: -40, left: -40, width: 360, height: 360, background: 'rgba(255,255,255,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
-        </div>
-
-        {/* Content */}
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 20px', position: 'relative', zIndex: 1, width: '100%', display: 'flex', alignItems: 'center', flex: 1 }}>
-          <div style={{ maxWidth: 700 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 7,
-              padding: '6px 16px', background: 'rgba(226,185,59,0.15)',
-              border: '1px solid rgba(226,185,59,0.3)',
-              borderRadius: 999, fontSize: 12, fontWeight: 700, color: '#E2B93B',
-              marginBottom: 28, backdropFilter: 'blur(8px)',
-            }}>
-              <Sparkles style={{ width: 13, height: 13 }} />
-              Yeni nesil İslami pazar yeri
-            </span>
-
-            {HERO_SLIDES.map((slide, i) => (
-              <div key={i} style={{
-                opacity: slideIdx === i ? 1 : 0,
-                transform: slideIdx === i ? 'translateY(0)' : 'translateY(12px)',
-                transition: 'opacity 0.7s ease, transform 0.7s ease',
-                position: slideIdx === i ? 'relative' : 'absolute',
-                pointerEvents: slideIdx === i ? 'auto' : 'none',
-              }}>
-                <h1 style={{ fontSize: 'clamp(2.2rem,4.5vw,3.8rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 22, letterSpacing: '-0.03em' }}>
-                  {slide.title}<br />
-                  <span style={{ color: slide.accent, transition: 'color 0.6s' }}>{slide.highlight}</span>
-                </h1>
-                <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.72)', marginBottom: 40, lineHeight: 1.7, maxWidth: 520 }}>
-                  {slide.desc}
-                </p>
-              </div>
-            ))}
-
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 56 }}>
-              <Link to="/urunler" className="btn btn-accent" style={{ fontSize: 15 }}>
-                Ürünleri Keşfet <ArrowRight style={{ width: 17, height: 17 }} />
-              </Link>
-              <Link to="/kayit" className="btn btn-ghost" style={{ fontSize: 15 }}>
-                Ücretsize Kayıt Ol
-              </Link>
-            </div>
-
-            <div style={{ display: 'flex', gap: 36, marginBottom: 40 }}>
-              {[['12+', 'Ürün'], ['100%', 'Güvenli'], ['7/24', 'Destek']].map(([val, lbl]) => (
-                <div key={lbl}>
-                  <div style={{ fontSize: 26, fontWeight: 900, color: '#E2B93B' }}>{val}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 3, fontWeight: 600 }}>{lbl}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Prev / Next arrows */}
         <button onClick={prevSlide} aria-label="Geri" style={{
