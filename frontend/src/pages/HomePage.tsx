@@ -269,7 +269,7 @@ export default function HomePage() {
             title="Çok Satanlar" subtitle="En çok ilgi gören ürünler"
             linkTo="/urunler?sort=popular" linkColor="#f97316" linkBg="#fff7ed"
           />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
+          <div className="product-grid">
             {popularProducts.map((product, idx) => (
               <ProductCard key={product.id} product={product} badge={`🔥 #${idx + 1}`} badgeColor="#f97316" />
             ))}
@@ -286,7 +286,7 @@ export default function HomePage() {
             linkTo="/urunler" linkColor="#ef4444" linkBg="#fff5f5"
           />
           {/* Big deal highlight */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
+          <div className="product-grid">
             {dealProducts.filter(p => p.discounted_price).slice(0, 8).map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -326,7 +326,7 @@ export default function HomePage() {
         />
 
         {latestProducts && latestProducts.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 18 }}>
+          <div className="product-grid">
             {latestProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}

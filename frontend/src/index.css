@@ -151,3 +151,12 @@ input, select, textarea { max-width: 100%; }
   .stack-mobile { grid-template-columns: 1fr !important; gap: 16px !important; }
   .pad-compact { padding: 16px !important; }
 }
+
+/* ── Product grid ────────────────────────────────────────────────────
+   Homepage sections load 8 products; 4 columns (desktop) and 2 columns (smaller screens)
+   both divide 8 evenly, so the last row is never left half-empty. */
+.product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+
+@media (max-width: 1023px) {
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
