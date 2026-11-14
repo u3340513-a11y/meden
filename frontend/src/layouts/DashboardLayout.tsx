@@ -221,7 +221,7 @@ export default function DashboardLayout() {
           </button>
 
           <Link to="/" style={{ flexShrink: 0 }}>
-            <img src="/log2.jpeg" alt="Medeniyet Pazarı"
+            <img src="/ico2.jpeg" alt="Medeniyet Pazarı"
               style={{ height: 38, width: 'auto', borderRadius: 8, objectFit: 'contain' }} />
           </Link>
 

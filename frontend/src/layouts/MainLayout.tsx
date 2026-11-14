@@ -82,7 +82,7 @@ export default function MainLayout() {
           <div style={{ display: 'flex', alignItems: 'center', height: 68, gap: 16 }}>
 
             <Link to="/" style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-              <img src="/log2.jpeg" alt="Medeniyet Pazarı"
+              <img src="/ico2.jpeg" alt="Medeniyet Pazarı"
                 style={{ height: 44, width: 'auto', borderRadius: 8, objectFit: 'contain' }} />
             </Link>
 
@@ -397,7 +397,7 @@ export default function MainLayout() {
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 40, paddingBottom: 40 }}>
             <div>
-              <img src="/log2.jpeg" alt="Medeniyet Pazarı" style={{ height: 48, width: 'auto', borderRadius: 8, marginBottom: 16 }} />
+              <img src="/ico2.jpeg" alt="Medeniyet Pazarı" style={{ height: 48, width: 'auto', borderRadius: 8, marginBottom: 16 }} />
               <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
                 Güvenli alışverişin yeni adresi. Helal ve güvenilir, işbirliği ve kalkınma pazarı.
               </p>
