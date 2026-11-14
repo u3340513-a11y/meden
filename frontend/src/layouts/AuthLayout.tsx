@@ -16,7 +16,7 @@ export default function AuthLayout() {
         <div className="relative z-10 text-text-inverse max-w-md w-full flex flex-col items-center text-center">
           <div className="mb-10">
             <img
-              src="/logo.jpeg"
+              src="/log2.jpeg"
               alt="Medeniyet Pazarı"
               className="w-64 h-auto rounded-2xl object-contain shadow-2xl shadow-black/30 mx-auto"
             />
@@ -49,7 +49,7 @@ export default function AuthLayout() {
           }}
         >
           <Link to="/" className="flex items-center justify-center lg:hidden" style={{ marginBottom: 24 }}>
-            <img src="/logo.jpeg" alt="Medeniyet Pazarı" className="h-16 w-auto rounded-xl object-contain" />
+            <img src="/log2.jpeg" alt="Medeniyet Pazarı" className="h-16 w-auto rounded-xl object-contain" />
           </Link>
           <Outlet />
         </div>
