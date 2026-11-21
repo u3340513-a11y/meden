@@ -1,6 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Users } from 'lucide-react'
+import type { PaginatedResponse } from '@/types'
 
 const ROLE_MAP: Record<string, { label: string; color: string; bg: string }> = {
   super_admin: { label: 'Süper Admin', color: '#7c3aed', bg: '#f5f3ff' },
@@ -16,9 +18,15 @@ const TH: React.CSSProperties = {
 }
 
 export default function UsersPage() {
+  const [page, setPage] = useState(1)
+
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-users'],
-    queryFn: async () => { const { data } = await api.get('/admin/users'); return data.data },
+    queryKey: ['admin-users', page],
+    queryFn: async () => {
+      const { data } = await api.get('/admin/users', { params: { page } })
+      return data.data as PaginatedResponse<any>
+    },
+    placeholderData: keepPreviousData,
   })
 
   return (
@@ -28,7 +36,7 @@ export default function UsersPage() {
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#1a1a2e', letterSpacing: '-0.02em' }}>Kullanıcılar</h1>
           <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
-            {data?.total ?? (data?.data?.length ?? 0)} kullanıcı listeleniyor
+            {data?.total ?? 0} kullanıcı listeleniyor
           </p>
         </div>
         <div style={{
@@ -102,6 +110,22 @@ export default function UsersPage() {
               <div style={{ textAlign: 'center', padding: '48px 20px', color: '#94a3b8', fontSize: 14 }}>
                 Kullanıcı bulunamadı.
               </div>
+            )}
+            {data && data.last_page > 1 && (
+              <nav aria-label="Sayfalar" style={{ display: 'flex', justifyContent: 'center', gap: 6, padding: 16, borderTop: '1px solid #f1f5f9' }}>
+                {Array.from({ length: data.last_page }, (_, i) => i + 1).map(n => (
+                  <button key={n} onClick={() => setPage(n)} aria-label={`Sayfa ${n}`}
+                    aria-current={n === data.current_page ? 'page' : undefined}
+                    style={{
+                      width: 38, height: 38, borderRadius: 10, border: 'none', cursor: 'pointer',
+                      fontSize: 13, fontWeight: 700, transition: 'all 0.15s',
+                      background: n === data.current_page ? '#0F5EA8' : '#f1f5f9',
+                      color: n === data.current_page ? '#fff' : '#64748b',
+                    }}>
+                    {n}
+                  </button>
+                ))}
+              </nav>
             )}
           </div>
         )}
