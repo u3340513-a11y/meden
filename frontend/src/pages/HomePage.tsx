@@ -9,6 +9,7 @@ import api from '@/lib/api'
 import type { Product } from '@/types'
 
 const HERO_SLIDES = [
+  { image: '/yeni-mahsuk.png' },
   { image: '/Gemini Resim-1.jpg' },
   { image: '/Gemini Resim-2.jpg' },
   { image: '/WhatsApp Image 2026-11-01 at 15.37.32.jpeg' },
