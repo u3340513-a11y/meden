@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Support\PasswordPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,11 @@ class ForgotPasswordController extends Controller
         ]);
 
         try {
-            Password::sendResetLink($request->only('email'));
+            $status = Password::sendResetLink($request->only('email'));
+
+            if ($status !== Password::RESET_LINK_SENT) {
+                Log::warning('Password reset link was not sent.', ['status' => $status]);
+            }
         } catch (Throwable $exception) {
             Log::error('Password reset mail could not be sent.', ['error' => $exception->getMessage()]);
         }
@@ -38,12 +43,8 @@ class ForgotPasswordController extends Controller
         $request->validate([
             'token' => ['required', 'string'],
             'email' => ['required', 'email', 'max:191'],
-            'password' => ['required', 'string', 'min:8', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'confirmed'],
-        ], [
-            'password.min' => 'Şifre en az 8 karakter olmalıdır.',
-            'password.regex' => 'Şifre en az 1 büyük harf ve 1 rakam içermelidir.',
-            'password.confirmed' => 'Şifre tekrarı uyuşmuyor.',
-        ]);
+            'password' => PasswordPolicy::rules(),
+        ], PasswordPolicy::messages());
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),

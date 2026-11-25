@@ -74,7 +74,7 @@ export default function LoginPage() {
               width: 16, height: 16, color: '#94a3b8',
             }} />
             <input
-              type={showPw ? 'text' : 'password'} value={password}
+              type={showPw ? 'text' : 'password'} value={password} autoCapitalize="none" autoCorrect="off" spellCheck={false}
               onChange={e => setPassword(e.target.value)}
               required className="field" style={{ paddingLeft: 42, paddingRight: 44 }}
               placeholder="••••••••"

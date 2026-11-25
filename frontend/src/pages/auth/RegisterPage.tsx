@@ -121,7 +121,7 @@ export default function RegisterPage() {
 
         <Field icon={Lock} label="Şifre">
           <input
-            type={showPw ? 'text' : 'password'} value={form.password}
+            type={showPw ? 'text' : 'password'} value={form.password} autoCapitalize="none" autoCorrect="off" spellCheck={false}
             onChange={e => set('password', e.target.value)}
             className="field" style={{ ...inputStyle, paddingRight: 44 }}
             placeholder="En az 8 karakter" required autoComplete="new-password"
@@ -137,7 +137,7 @@ export default function RegisterPage() {
 
         <Field icon={Lock} label="Şifre Tekrar">
           <input
-            type={showPw ? 'text' : 'password'} value={form.password_confirmation}
+            type={showPw ? 'text' : 'password'} value={form.password_confirmation} autoCapitalize="none" autoCorrect="off" spellCheck={false}
             onChange={e => set('password_confirmation', e.target.value)}
             className="field" style={inputStyle} placeholder="Şifreyi tekrar girin"
             required autoComplete="new-password"

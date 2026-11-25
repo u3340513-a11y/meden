@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
           <div style={{ position: 'relative' }}>
             <Lock style={iconStyle} />
             <input
-              type={showPw ? 'text' : 'password'} value={password}
+              type={showPw ? 'text' : 'password'} value={password} autoCapitalize="none" autoCorrect="off" spellCheck={false}
               onChange={e => setPassword(e.target.value)}
               className="field" style={inputStyle}
               placeholder="En az 8 karakter, 1 büyük harf, 1 rakam"
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
           <div style={{ position: 'relative' }}>
             <Lock style={iconStyle} />
             <input
-              type={showPw ? 'text' : 'password'} value={confirmation}
+              type={showPw ? 'text' : 'password'} value={confirmation} autoCapitalize="none" autoCorrect="off" spellCheck={false}
               onChange={e => setConfirmation(e.target.value)}
               className="field" style={inputStyle}
               placeholder="Şifreyi tekrar girin"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\PasswordPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -29,7 +30,7 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:191', 'unique:users,email'],
             'phone' => ['required', 'string', 'regex:' . self::TURKISH_MOBILE_PATTERN, 'unique:users,phone'],
-            'password' => ['required', 'string', 'min:8', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'confirmed'],
+            'password' => PasswordPolicy::rules(),
             'referral_code' => ['required', 'string', 'size:8'],
         ];
     }
@@ -43,9 +44,7 @@ class RegisterRequest extends FormRequest
             'phone.required' => 'Cep telefonu numarası zorunludur.',
             'phone.regex' => 'Geçerli bir cep telefonu numarası giriniz (örn. 05XX XXX XX XX).',
             'phone.unique' => 'Bu cep telefonu numarası zaten kullanılıyor.',
-            'password.min' => 'Şifre en az 8 karakter olmalıdır.',
-            'password.regex' => 'Şifre en az 1 büyük harf ve 1 rakam içermelidir.',
-            'password.confirmed' => 'Şifre tekrarı uyuşmuyor.',
+            ...PasswordPolicy::messages(),
             'referral_code.required' => 'Referans kodu zorunludur.',
             'referral_code.size' => 'Referans kodu 8 karakter olmalıdır.',
         ];
