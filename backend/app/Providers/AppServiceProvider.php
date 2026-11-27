@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +26,20 @@ class AppServiceProvider extends ServiceProvider
         ResetPassword::createUrlUsing(
             fn (object $user, string $token): string => $this->frontendResetPasswordUrl($user->getEmailForPasswordReset(), $token)
         );
+
+        ResetPassword::toMailUsing(function (object $user, string $token): MailMessage {
+            $url = $this->frontendResetPasswordUrl($user->getEmailForPasswordReset(), $token);
+            $expire = (int) config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
+
+            return (new MailMessage)
+                ->subject('Medeniyet Pazarı şifre sıfırlama bağlantınız')
+                ->greeting('Merhaba,')
+                ->line('Hesabınız için şifre sıfırlama talebi aldık.')
+                ->action('Şifremi Sıfırla', $url)
+                ->line("Bu bağlantı {$expire} dakika geçerlidir.")
+                ->line('Bu talebi siz yapmadıysanız bu e-postayı yok sayabilirsiniz.')
+                ->salutation('Medeniyet Pazarı');
+        });
     }
 
     /**
