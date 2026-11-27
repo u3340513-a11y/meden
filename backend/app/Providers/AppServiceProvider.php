@@ -30,11 +30,12 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Why: the API has no named "password.reset" route, so Laravel's default link generation threw
      *      RouteNotFoundException and no reset mail was ever built; the mail must open the SPA page instead.
+     *      The link is built from FRONTEND_URL, not APP_URL, because the API host may differ from the SPA host.
      * Input: user's e-mail and the plain reset token. Output: absolute SPA URL carrying token and email.
      */
     private function frontendResetPasswordUrl(string $email, string $token): string
     {
-        return rtrim((string) config('app.url'), '/')
+        return rtrim((string) config('app.frontend_url'), '/')
             . self::FRONTEND_RESET_PASSWORD_PATH . '/' . $token
             . '?' . http_build_query(['email' => $email]);
     }
