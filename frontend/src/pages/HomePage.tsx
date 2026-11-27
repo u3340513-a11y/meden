@@ -13,6 +13,7 @@ const HERO_SLIDES = [
   { image: '/Gemini Resim-1.jpg' },
   { image: '/Gemini Resim-2.jpg' },
   { image: '/WhatsApp Image 2026-11-01 at 15.37.32.jpeg' },
+  { image: '/ticaret-felsefesi.webp' },
 ]
 
 
